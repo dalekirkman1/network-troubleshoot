@@ -1,0 +1,38 @@
+---
+# ============================================================
+# SECTION 3: PLATFORM HEALTH STATUS
+#
+# WHY: On IOS-XE, the control-processor brief output gives a
+#      quick CPU/memory health table for each internal process
+#      (IOS, kernel, etc.). Threshold breaches here indicate
+#      platform-level resource pressure, not just a single bad
+#      process. This is distinct from Section 4 (per-process CPU)
+#      — this command shows the health of the platform itself.
+#
+# HOW:
+#   - The raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map('trim')' strips leading/trailing whitespace
+#          from each line (IOS often pads lines with spaces).
+#       3. '| reject('equalto', '')' removes blank lines so
+#          the output has no large gaps in the terminal.
+#       4. '| list' materialises the filtered generator back
+#          into a concrete list.
+#       5. '| join('\n')' collapses the list into one string
+#          with real newlines, so debug prints it as a table
+#          instead of a Python list literal like ['line1','line2'].
+#
+# Tags: health — run alone with: --tags health
+# ============================================================
+- name: Gather Platform Control-Processor Status
+  cisco.ios.ios_command:
+    commands: show platform software status control-processor brief
+  register: platform_health
+  changed_when: false
+  tags: health
+
+- name: "-> HEALTH: Control-Processor Status for {{ inventory_hostname }}"
+  ansible.builtin.debug:
+    msg: "{{ platform_health.stdout[0].splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}"
+  tags: health

@@ -1,0 +1,68 @@
+---
+# ============================================================
+# SECTION 1 & 2: SYSTEM INFORMATION, HARDWARE & UPTIME
+#
+# WHY: Confirms the device is reachable and anchors all
+#      subsequent output to a specific hostname, so multi-device
+#      runs stay readable in the terminal. A recent reload or
+#      unexpected last-reload reason is one of the first things
+#      to check during troubleshooting — it immediately explains
+#      many instability symptoms.
+#
+# HOW (Section 1 — Software Version):
+#   - 'show version | include Cisco IOS Software' uses the IOS
+#     pipe filter ON THE DEVICE to return only the one matching
+#     line, keeping the registered variable small and clean.
+#   - The result lands in version_out.stdout[0] — stdout is
+#     always a list (one entry per command sent).
+#   - '| trim' strips leading/trailing whitespace or carriage
+#     returns that IOS commonly appends to SSH output.
+#   - 'changed_when: false' marks the task as never changing
+#     device state, which is correct for all show commands.
+#     Without this, Ansible incorrectly reports "changed" on
+#     every run, polluting change-tracking and handlers.
+#   - The vars file var 'ios_show_version_cmd' holds the command
+#     string, keeping the task clean and the command in one place.
+#
+# HOW (Section 2 — Uptime & Reload Reason):
+#   - The full 'show version' output is registered here because
+#     it contains both the uptime string and reload reason in
+#     the same block of text — one command, multiple data points.
+#   - 'regex_search('Last reload reason: (.*)', '\\1')' uses a
+#     capture group (the parentheses) to extract ONLY the reason
+#     text after the colon, not the full line. The '\\1' argument
+#     tells Jinja2 to return capture group 1 as the result.
+#   - '| first' unwraps the list that regex_search returns when
+#     using capture groups.
+#   - '| default('Unknown')' is a safety net in case the pattern
+#     is not found (e.g. cold-start boot with no reload reason).
+#   - The regex pattern is stored in vars/main.yml as
+#     'ios_reload_reason_regex' for reuse in the report template.
+#
+# Tags: system — run alone with: --tags system
+# ============================================================
+- name: Gather Device Software Version
+  cisco.ios.ios_command:
+    commands: "{{ ios_show_version_cmd }}"
+  register: version_out
+  changed_when: false
+  tags: system
+
+- name: "== [ DEVICE: {{ inventory_hostname }} ] =="
+  ansible.builtin.debug:
+    msg:
+      - "Hostname: {{ inventory_hostname }}"
+      - "Software: {{ version_out.stdout[0] | trim }}"
+  tags: system
+
+- name: Check Device Uptime and Reload Reason
+  cisco.ios.ios_command:
+    commands: show version
+  register: hardware_out
+  changed_when: false
+  tags: system
+
+- name: -> Extract Last Reload Reason
+  ansible.builtin.debug:
+    msg: "LAST RELOAD: {{ hardware_out.stdout[0] | regex_search(ios_reload_reason_regex, '\\1') | first | default('Unknown') }}"
+  tags: system

@@ -1,0 +1,102 @@
+---
+# ============================================================
+# REPORT — ASSEMBLE AND WRITE HEALTH REPORT
+# ============================================================
+
+- name: "DEBUG | Confirm CPU variables"
+  ansible.builtin.debug:
+    msg:
+      - "nxos_cpu_summary   : '{{ nxos_cpu_summary | default('EMPTY') }}'"
+      - "nxos_cpu_top5_str  : '{{ nxos_cpu_top5_str | default('EMPTY') }}'"
+      - "nxos_cpu_raw_output (first 200 chars): '{{ nxos_cpu_raw_output[:200] | default('EMPTY') }}'"
+
+- name: "DEBUG | Confirm memory variables"
+  ansible.builtin.debug:
+    msg:
+      - "nxos_mem_top5_str  : '{{ nxos_mem_top5_str | default('EMPTY') }}'"
+      - "nxos_mem_raw first 200 chars: '{{ nxos_mem_raw.stdout[0][:200] | default('EMPTY') }}'"
+
+- name: "REPORT | Write assembled NX-OS health report to control node"
+  ansible.builtin.copy:
+    content: |
+      =======================================================
+      HEALTH REPORT: {{ nxos_facts.ansible_facts.ansible_net_hostname }}
+      DATE: {{ report_ts }}
+      =======================================================
+
+
+      --- 1. SYSTEM INFO ---
+      Hostname: {{ nxos_facts.ansible_facts.ansible_net_hostname }}
+      Platform: {{ nxos_facts.ansible_facts.ansible_net_platform | default('N/A') }}
+      Software: NX-OS Version {{ nxos_facts.ansible_facts.ansible_net_version }}
+      Serial:   {{ nxos_facts.ansible_facts.ansible_net_serialnum | default('N/A') }}
+
+
+      --- 2. DEVICE UPTIME ---
+      {{ nxos_version.stdout[0] | replace('\r', '') | regex_search('Kernel uptime[^\n]*') | default('Uptime: see full show version output') }}
+      Last reload reason: {{ nxos_version.stdout[0] | replace('\r', '') | regex_search('reason:[^\n]*') | default('N/A') }}
+
+
+      --- 3. PLATFORM HEALTH STATUS ---
+      {{ nxos_sysres.stdout[0] | replace('\r', '') | default('show system resources: no output returned') }}
+
+
+      --- 4. CPU TOP PROCESSES ---
+      {{ nxos_cpu_summary | default('CPU summary not available') }}
+
+      Top 5 Processes by CPU:
+      PID    Runtime(ms)  Invoked   uSecs  1Sec    Process
+      -----  -----------  --------  -----  ------  -----------
+      {{ nxos_cpu_top5_str | default('No process data available') }}
+
+
+      --- 5. MEMORY STATISTICS ---
+      Memory Pool Summary:
+      {{ nxos_mem_pool.stdout[0] | replace('\r', '') | default('show system resources: no output returned') }}
+
+      Top 5 Processes by Memory:
+      {{ nxos_mem_top5_str | default('No process data available') }}
+
+
+       --- 6. INTERFACE STATUS ---
+      {{ nxos_int_status_str | default('show interface status: no output returned') }}
+
+
+      --- 7. INTERFACE HEALTH & MTU ---
+      {% for item in nxos_facts.ansible_facts.ansible_net_interfaces | default({}) | dict2items | sort(attribute='key') %}
+      {% set mtu_flag = '[MTU MISMATCH]' if (item.value.mtu | default(standard_mtu)) != standard_mtu else '' %}
+      {{ item.key }}: [MTU: {{ item.value.mtu | default('N/A') }}] {{ mtu_flag }} Errors: In={{ item.value.in_errors | default(0) }}, Out={{ item.value.out_errors | default(0) }}, CRC={{ item.value.in_crc_errors | default(0) }}
+      {% endfor %}
+      
+
+      --- 8. TRANSCEIVER (SFP) DIAGNOSTICS ---
+      {{ nxos_sfp_str | default('Status: Not supported or no SFP transceivers present.') }}   
+
+
+      --- 9. TOPOLOGY (CDP) ---
+      {% if cdp_state.parsed is defined and cdp_state.parsed | length > 0 %}
+      {% for item in cdp_state.parsed %}
+      Connected to {{ item.NEIGHBOR | regex_replace('\(.*\)', '') | trim }} via {{ item.LOCAL_INTERFACE | default('Unknown') }} (neighbor port: {{ item.NEIGHBOR_INTERFACE | default('Unknown') }})
+      {% endfor %}
+      {% else %}
+      No CDP neighbors found or CDP not enabled.
+      {% endif %}
+
+
+      --- 10. OSPF NEIGHBORS ---
+      {{ nxos_ospf.stdout[0] | replace('\r', '') | default('No OSPF neighbors found or OSPF not configured.') }}
+
+
+      --- 11. BGP PEERING STATE ---
+      {{ nxos_bgp_summary.stdout[0] | replace('\r', '') | default('No BGP sessions found or BGP not configured.', true) }}     
+
+
+      --- 12. RECENT LOGS ---
+      {{ nxos_logs.stdout[0] | replace('\r', '') | default('No log entries returned.') }}
+
+    dest: "{{ report_dir }}{{ nxos_facts.ansible_facts.ansible_net_hostname }}_health_report_{{ report_ts }}.txt"
+  delegate_to: localhost
+
+- name: "REPORT | Confirm health report file path to console"
+  ansible.builtin.debug:
+    msg: "Health report saved → {{ report_dir }}{{ nxos_facts.ansible_facts.ansible_net_hostname }}_health_report_{{ report_ts }}.txt"

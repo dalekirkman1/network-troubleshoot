@@ -1,0 +1,73 @@
+---
+# ============================================================
+# SECTION 10: OSPF NEIGHBOR STATE
+#
+# WHY: An OSPF adjacency stuck in anything other than FULL/DR or
+#      FULL/BDR means routes are NOT being exchanged, which causes
+#      silent blackholing of traffic — often with no interface
+#      alarms to indicate the problem.
+#
+# HOW — Block/Rescue:
+#   - Wrapped in block/rescue so a device without OSPF configured
+#     does not abort the play. The rescue sets
+#     'ospf_state_available: false' so the report template writes
+#     "not configured" cleanly instead of crashing.
+#
+# HOW — FULL State Check:
+#   - Uses 'ospf_full_state not in item.state' rather than strict
+#     equality because valid IOS states are 'FULL/DR', 'FULL/BDR',
+#     and 'FULL/  -'. Checking 'not in' catches all three correctly.
+#
+# HOW — ntc_templates key names (all lowercase):
+#   neighbor_id   — OSPF neighbour router-id
+#   state         — adjacency state (FULL/DR, FULL/BDR, etc.)
+#   interface     — local interface the adjacency is formed on
+#   ip_address    — neighbour IP address
+#   priority      — OSPF DR priority
+#   dead_time     — time remaining before neighbour declared dead
+#
+# Tags: ospf — run alone with: --tags ospf
+# ============================================================
+- name: OSPF Neighbor State Block
+  block:
+    - name: Gather 'show ip ospf neighbor' with ntc_templates
+      ansible.utils.cli_parse:
+        command: show ip ospf neighbor
+        parser:
+          name: ansible.netcommon.ntc_templates
+      register: ospf_state
+      changed_when: false
+
+    - name: Set OSPF availability flag (configured)
+      ansible.builtin.set_fact:
+        ospf_state_available: true
+
+    - name: -> ALERT on OSPF Neighbors NOT in FULL state
+      ansible.builtin.debug:
+        msg: "WARNING: OSPF Neighbor {{ item.neighbor_id }} on {{ item.interface }} is stuck in state {{ item.state }}"
+      loop: "{{ ospf_state.parsed | default([]) }}"
+      when: ospf_state.parsed is defined and ospf_full_state not in item.state
+      loop_control:
+        label: "{{ item.neighbor_id | default('Unknown') }}"
+
+    - name: -> INFO OSPF Neighbor Full Status
+      ansible.builtin.debug:
+        msg: >-
+          {{ 'OK' if ospf_full_state in item.state else 'ALERT' }}:
+          Neighbor {{ item.neighbor_id }} is {{ item.state }} on {{ item.interface }}
+      loop: "{{ ospf_state.parsed | default([]) }}"
+      loop_control:
+        label: "{{ item.neighbor_id }}"
+
+  rescue:
+    - name: -> NOTICE OSPF not configured or command failed
+      ansible.builtin.debug:
+        msg: "NOTICE: OSPF does not appear to be configured on {{ inventory_hostname }} — skipping OSPF section."
+
+    - name: Set OSPF availability flag (not configured)
+      ansible.builtin.set_fact:
+        ospf_state_available: false
+        ospf_state:
+          parsed: []
+
+  tags: ospf

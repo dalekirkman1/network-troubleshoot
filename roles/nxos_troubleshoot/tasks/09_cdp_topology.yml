@@ -1,0 +1,47 @@
+---
+# ============================================================
+# SECTION 9 — TOPOLOGY (CDP)
+# Uses ansible.utils.cli_parse with a custom TextFSM template.
+# Template path: project_root/templates/nxos_show_cdp_neighbors.textfsm
+# TextFSM returns uppercase field names: NEIGHBOR, LOCAL_INTERFACE,
+# NEIGHBOR_INTERFACE, PLATFORM, CAPABILITY, HOLDTIME.
+# NEIGHBOR field includes chassis serial in parentheses e.g.
+# SW2(9UYR85A1KU0) — regex_replace strips it for clean output.
+# ============================================================
+
+- name: "SECTION 09 | Parse show cdp neighbors output with TextFSM custom template"
+  ansible.utils.cli_parse:
+    command: show cdp neighbors
+    parser:
+      name: ansible.utils.textfsm
+      template_path: "{{ playbook_dir }}/templates/nxos_show_cdp_neighbors.textfsm"
+  register: cdp_state
+  ignore_errors: true
+
+- name: "SECTION 09 | Print raw CDP parsed structure to confirm field names"
+  ansible.builtin.debug:
+    var: cdp_state.parsed
+  when: cdp_state.parsed is defined
+
+- name: "SECTION 09 | Print CDP topology neighbors to console"
+  ansible.builtin.debug:
+    msg: >-
+      Connected to {{ item.NEIGHBOR | regex_replace('\(.*\)', '') | trim }}
+      on local port {{ item.LOCAL_INTERFACE | default('Unknown') }}
+      → neighbor port {{ item.NEIGHBOR_INTERFACE | default('Unknown') }}
+      [Platform: {{ item.PLATFORM | default('Unknown') }}]
+  loop: "{{ cdp_state.parsed | default([]) }}"
+  when:
+    - cdp_state is not failed
+    - cdp_state.parsed is defined
+    - cdp_state.parsed | length > 0
+  loop_control:
+    label: "{{ item.LOCAL_INTERFACE | default('Unknown') }}"
+
+- name: "SECTION 09 | INFO — No CDP neighbors found or CDP not enabled"
+  ansible.builtin.debug:
+    msg: "No CDP neighbors discovered. Verify CDP is enabled: 'show cdp' and 'show cdp interface'."
+  when: >
+    cdp_state is failed or
+    cdp_state.parsed is not defined or
+    cdp_state.parsed | length == 0

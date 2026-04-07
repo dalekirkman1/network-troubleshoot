@@ -1,0 +1,54 @@
+---
+# ============================================================
+# SECTION 6 — INTERFACE STATUS
+# nxos_facts operstatus/lineprotocol fields are not populated
+# on all NX-OS platforms including N9K-C9300v virtual.
+# 'show interface status' is used directly as it reliably
+# returns connected/notconnect/disabled state on all platforms.
+# NX-OS truncates 'notconnect' to 'notconnec' in the Status
+# column of 'show interface status' output — both forms are
+# handled in the regex_replace patterns below.
+# Connected interfaces are listed first, followed by a count
+# summary and full list of down/disabled interfaces to reduce
+# noise on switches with many default unconfigured ports.
+# ============================================================
+
+- name: "SECTION 06 | Run show interface status for port operational state"
+  cisco.nxos.nxos_command:
+    commands:
+      - show interface status
+  register: nxos_int_status
+
+- name: "SECTION 06 | Print interface status table to console"
+  ansible.builtin.debug:
+    var: nxos_int_status.stdout_lines
+
+- name: "SECTION 06 | Build per-interface status lines from raw output"
+  ansible.builtin.set_fact:
+    nxos_int_status_connected: >-
+      {{
+        nxos_int_status.stdout[0]
+        | split('\n')
+        | select('search', 'connected|notconnec|disabled')
+        | map('replace', '\r', '')
+        | list
+        | map('regex_replace', '^(\S+)\s+\S*\s+connected\s+.*', '[OK]   \1 is connected')
+        | map('regex_replace', '^(\S+)\s+\S*\s+notconnec\s+.*', '[DOWN] \1 is notconnect')
+        | map('regex_replace', '^(\S+)\s+\S*\s+disabled\s+.*', '[DOWN] \1 is disabled')
+        | list
+      }}
+
+- name: "SECTION 06 | Assemble final interface status string with down count summary"
+  ansible.builtin.set_fact:
+    nxos_int_status_str: >-
+      {{
+        (nxos_int_status_connected | select('search', '\[OK\]') | list | join('\n'))
+        ~ '\n\nDown/Disabled interfaces ('
+        ~ (nxos_int_status_connected | select('search', '\[DOWN\]') | list | length | string)
+        ~ ' total):\n'
+        ~ (nxos_int_status_connected | select('search', '\[DOWN\]') | list | join('\n'))
+      }}
+
+- name: "SECTION 06 | Print formatted interface status to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_int_status_str }}"

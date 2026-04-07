@@ -1,0 +1,21 @@
+---
+# ============================================================
+# SETUP
+# Creates the report output directory on the Ansible control
+# node and sets a timestamp fact used in the report filename
+# and report header, matching the format used by the IOS-XE
+# role (DD-MM-YYYY_HH-MM-SS).
+# ============================================================
+
+- name: "SETUP | Set report timestamp for filename and report header"
+  ansible.builtin.set_fact:
+    report_ts: "{{ lookup('pipe', 'date +%d-%m-%Y_%H-%M-%S') }}"
+  delegate_to: localhost
+
+- name: "SETUP | Ensure local report output directory exists"
+  ansible.builtin.file:
+    path: "{{ report_dir }}"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+  run_once: true

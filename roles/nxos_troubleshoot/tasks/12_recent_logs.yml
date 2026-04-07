@@ -1,0 +1,19 @@
+---
+# ============================================================
+# SECTION 12 — RECENT LOGS
+# Runs 'show logging last 20' to retrieve the 20 most recent
+# syslog entries. NX-OS supports the 'last N' filter natively
+# unlike IOS-XE which requires grep-style include filters to
+# limit log output. The result is stored for inclusion in
+# the final health report.
+# ============================================================
+
+- name: "SECTION 12 | Run show logging last 20 to retrieve recent syslog entries"
+  cisco.nxos.nxos_command:
+    commands:
+      - show logging last 20
+  register: nxos_logs
+
+- name: "SECTION 12 | Print recent syslog entries to console"
+  ansible.builtin.debug:
+    var: nxos_logs.stdout_lines

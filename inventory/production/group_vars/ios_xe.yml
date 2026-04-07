@@ -1,0 +1,11 @@
+---
+# ============================================================
+# GROUP VARS — IOS-XE GROUP ONLY
+# ansible_network_os moved here from all.yml so it only
+# applies to R1, R2, R3 and does not leak to other groups.
+# ============================================================
+ansible_network_os: cisco.ios.ios
+ansible_connection: network_cli
+ansible_become: false
+standard_mtu: "1500"
+report_dir: "./reports/"

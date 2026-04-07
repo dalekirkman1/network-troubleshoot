@@ -1,0 +1,31 @@
+---
+# ============================================================
+# SECTION 8 — TRANSCEIVER (SFP) DIAGNOSTICS
+# On virtual platforms (N9K-C9300v) all ports return
+# 'transceiver is not applicable'. Output is condensed to
+# a single summary line rather than repeating it 64 times.
+# On physical platforms with real SFPs, full optical data
+# (Tx/Rx power, temperature, voltage, bias) is returned.
+# ============================================================
+
+- name: "SECTION 08 | Run show interface transceiver details for SFP optical data"
+  cisco.nxos.nxos_command:
+    commands:
+      - show interface transceiver details
+  register: nxos_sfp
+  ignore_errors: true
+
+- name: "SECTION 08 | Condense SFP output — summarise if all ports not applicable"
+  ansible.builtin.set_fact:
+    nxos_sfp_str: >-
+      {{
+        'Status: Virtual/copper platform — transceiver not applicable on all interfaces.'
+        if (nxos_sfp.stdout[0] | default('') | replace('\r', '')
+            | regex_search('transceiver is not applicable') and not
+            nxos_sfp.stdout[0] | default('') | regex_search('Tx Power|Rx Power|Temperature'))
+        else nxos_sfp.stdout[0] | default('No SFP data returned.') | replace('\r', '')
+      }}
+
+- name: "SECTION 08 | Print SFP transceiver diagnostics to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_sfp_str }}"

@@ -1,0 +1,9 @@
+---
+# ============================================================
+# ROLE VARS — internal constants not intended to be overridden.
+# Higher precedence than defaults; use for fixed role internals
+# such as regex patterns and command strings.
+# ============================================================
+ios_show_version_cmd: "show version | include Cisco IOS Software"
+ios_reload_reason_regex: "Last reload reason: (.*)"
+ios_uptime_regex: ".*uptime is.*"

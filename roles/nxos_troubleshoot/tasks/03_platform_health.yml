@@ -1,0 +1,18 @@
+---
+# ============================================================
+# SECTION 3 — PLATFORM HEALTH STATUS
+# 'show system resources' is the NX-OS equivalent of IOS-XE's
+# 'show platform resources'. It provides a single-command
+# summary of CPU load averages and memory (total/used/free)
+# at the platform level without needing per-process detail.
+# ============================================================
+
+- name: "SECTION 03 | Run show system resources for CPU and memory summary"
+  cisco.nxos.nxos_command:
+    commands:
+      - show system resources
+  register: nxos_sysres
+
+- name: "SECTION 03 | Print platform health status to console"
+  ansible.builtin.debug:
+    var: nxos_sysres.stdout_lines

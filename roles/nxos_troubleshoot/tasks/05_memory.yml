@@ -1,0 +1,51 @@
+---
+# ============================================================
+# SECTION 5 — MEMORY STATISTICS
+# Two-part memory output:
+#   Part A — 'show system resources' for pool-level totals
+#             (total/used/free). Authoritative NX-OS memory
+#             summary available on all platforms.
+#   Part B — 'show processes memory' for per-process usage.
+#             'sort' keyword is invalid on NX-OS for this
+#             command unlike IOS-XE. Output is post-processed
+#             in Ansible to extract top N by list order.
+# Top N processes extracted using select('search', ...) with
+# re.search() — avoids YAML escape layer issues that caused
+# select('match') and regex_findall('(?m)^...') to silently
+# return empty results.
+# Memory process lines are identified by three consecutive
+# numeric columns (PID, MemAlloc, MemLimit) which is unique
+# to process data rows and works on both physical and virtual
+# NX-OS platforms regardless of stack pointer format.
+# mem_lines_to_show is pre-cast to int via a dedicated
+# set_fact (_mem_n) before use in slice notation. A default
+# of 5 is applied in case defaults/main.yml is not loaded.
+# ============================================================
+
+- name: "SECTION 05 | Run show system resources for memory pool totals"
+  cisco.nxos.nxos_command:
+    commands:
+      - show system resources
+  register: nxos_mem_pool
+
+- name: "SECTION 05 | Print memory pool totals (total/used/free) to console"
+  ansible.builtin.debug:
+    var: nxos_mem_pool.stdout_lines
+
+- name: "SECTION 05 | Run show processes memory for per-process memory usage"
+  cisco.nxos.nxos_command:
+    commands:
+      - show processes memory
+  register: nxos_mem_raw
+
+- name: "SECTION 05 | Cast mem_lines_to_show to integer for use in slice"
+  ansible.builtin.set_fact:
+    _mem_n: "{{ mem_lines_to_show | default(5) | int }}"
+
+- name: "SECTION 05 | Extract top N memory consumers — controlled by mem_lines_to_show"
+  ansible.builtin.set_fact:
+    nxos_mem_top5_str: "{{ (nxos_mem_raw.stdout[0] | split('\n') | select('search', '\\d+\\s+\\d+\\s+\\d+') | list)[: _mem_n] | join('\n') }}"
+
+- name: "SECTION 05 | Print top memory consuming processes to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_mem_top5_str }}"

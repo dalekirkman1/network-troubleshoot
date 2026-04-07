@@ -1,0 +1,8 @@
+---
+# ============================================================
+# GROUP VARS — ALL HOSTS
+# Only truly universal settings here.
+# Platform-specific network_os is set per group in
+# group_vars/ios_xe.yml and group_vars/nxos.yml.
+# ============================================================
+ansible_become: false

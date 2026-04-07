@@ -1,0 +1,46 @@
+---
+# ============================================================
+# SECTION 7 — INTERFACE HEALTH & MTU
+# Checks all interfaces for:
+#   - MTU compliance against standard_mtu (group_vars/nxos.yml)
+#   - Input/output/CRC error counters from ansible_net_interfaces
+# Any interface deviating from standard_mtu is flagged with
+# [MTU MISMATCH] in both the console output and the report,
+# matching the IOS-XE role behaviour.
+# ============================================================
+
+- name: "SECTION 07 | Build list of interfaces with MTU violations"
+  ansible.builtin.set_fact:
+    mtu_issues: >-
+      {{
+        nxos_facts.ansible_facts.ansible_net_interfaces
+        | default({})
+        | dict2items
+        | selectattr('value.mtu', 'defined')
+        | selectattr('value.mtu', '!=', standard_mtu)
+        | map(attribute='key')
+        | list
+      }}
+
+- name: "SECTION 07 | Print per-interface MTU and error counters to console"
+  ansible.builtin.debug:
+    msg: >-
+      {{ item.key }}: [MTU: {{ item.value.mtu | default('N/A') }}]
+      {{ '[MTU MISMATCH]' if (item.value.mtu | default(standard_mtu)) != standard_mtu else '' }}
+      Errors: In={{ item.value.in_errors | default(0) }},
+      Out={{ item.value.out_errors | default(0) }},
+      CRC={{ item.value.in_crc_errors | default(0) }}
+  loop: "{{ nxos_facts.ansible_facts.ansible_net_interfaces | default({}) | dict2items | sort(attribute='key') }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: "SECTION 07 | WARN — Print interfaces with MTU violations"
+  ansible.builtin.debug:
+    msg: "[MTU MISMATCH] {{ item }} does not match standard MTU {{ standard_mtu }}"
+  loop: "{{ mtu_issues | default([]) }}"
+  when: mtu_issues | default([]) | length > 0
+
+- name: "SECTION 07 | OK — Confirm no MTU violations found"
+  ansible.builtin.debug:
+    msg: "All interfaces comply with standard MTU: {{ standard_mtu }}"
+  when: mtu_issues | default([]) | length == 0

@@ -1,0 +1,18 @@
+# Generated reports
+reports/*.txt
+
+# Vault password file — never commit this
+.vault_pass
+*.vault_pass
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo

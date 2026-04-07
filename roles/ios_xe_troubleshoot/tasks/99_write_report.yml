@@ -1,0 +1,48 @@
+---
+# ============================================================
+# SECTION 13: GENERATE LOCAL REPORT
+#
+# WHY: Terminal output disappears after the run completes.
+#      This task persists all collected data to a timestamped
+#      text file on the Ansible control node so it can be
+#      archived, diffed against future runs to detect change,
+#      attached to a ticket, or shared with colleagues who were
+#      not present during the run.
+#
+# HOW:
+#   - 'delegate_to: localhost' redirects this task to run on
+#     the Ansible control node (your machine), not the IOS device.
+#     This is required because 'ansible.builtin.template' writes
+#     to the local filesystem, and IOS devices cannot execute
+#     the Python interpreter that Ansible modules require.
+#   - 'ansible.builtin.template' is used here instead of the
+#     original 'ansible.builtin.copy' with inline content. The
+#     Jinja2 template is extracted to
+#     templates/health_report.j2, which is easier to read,
+#     diff in git, and maintain independently of the task YAML.
+#   - 'report_ts' and 'report_date' are the pre-computed
+#     set_fact values from preflight.yml, guaranteeing that both
+#     the filename and the report header always show the exact
+#     same timestamp — a clock-skew issue with the original
+#     approach of calling lookup('pipe', 'date') twice.
+#   - 'report_dir' is a role default var (default: "./reports/")
+#     so the output path can be redirected to any location by
+#     overriding in group_vars or host_vars without touching
+#     this task file.
+#   - 'ospf_state_available' and 'bgp_state_available' (set by
+#     the block/rescue tasks in ospf.yml and bgp.yml) gate the
+#     protocol sections in the template. When false, the template
+#     writes "not configured on this device" cleanly rather than
+#     crashing on an undefined variable or leaving a blank section.
+#
+# Tags: report — run alone with: --tags report
+#   Note: running --tags report alone requires all other data-
+#   gathering tasks to have already run in the same play, as this
+#   task depends on all registered variables being in scope.
+# ============================================================
+- name: "-> REPORT: Save output to file for {{ inventory_hostname }}"
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: health_report.j2
+    dest: "{{ report_dir }}{{ inventory_hostname }}_health_report_{{ report_ts }}.txt"
+  tags: report

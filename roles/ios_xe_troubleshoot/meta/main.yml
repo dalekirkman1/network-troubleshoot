@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: your_name
+  description: IOS-XE state validation and health check role
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Cisco IOS-XE
+      versions:
+        - "17.x"
+        - "16.x"
+
+dependencies: []
+

@@ -1,0 +1,60 @@
+---
+# ============================================================
+# SECTION 4 — CPU TOP PROCESSES
+# NX-OS supports 'show processes cpu sort' (plural) on most
+# platforms. A fallback to 'show process cpu sort' (singular)
+# is included for older NX-OS versions.
+# Top N processes extracted using select('search', ...) with
+# re.search() — avoids YAML escape layer issues that caused
+# select('match') and regex_findall('(?m)^...') to silently
+# return empty results.
+# CPU process lines are identified by containing a percentage
+# value e.g. '5.00%' which is unique to process data rows.
+# CPU summary lines are identified by containing 'CPU util'.
+# cpu_lines_to_show is pre-cast to int via a dedicated
+# set_fact (_cpu_n) before use in slice notation. A default
+# of 5 is applied in case defaults/main.yml is not loaded.
+# ============================================================
+
+- name: "SECTION 04 | Run show processes cpu sort for top CPU consumers"
+  cisco.nxos.nxos_command:
+    commands:
+      - show processes cpu sort
+  register: nxos_cpu_top
+  ignore_errors: true
+
+- name: "SECTION 04 | Fallback — Run show process cpu sort (singular) if plural failed"
+  cisco.nxos.nxos_command:
+    commands:
+      - show process cpu sort
+  register: nxos_cpu_top_fallback
+  when: nxos_cpu_top is failed
+
+- name: "SECTION 04 | Consolidate CPU output from whichever command succeeded"
+  ansible.builtin.set_fact:
+    nxos_cpu_raw_output: >-
+      {{
+        nxos_cpu_top.stdout[0]
+        if nxos_cpu_top is not failed
+        else nxos_cpu_top_fallback.stdout[0] | default('')
+      }}
+
+- name: "SECTION 04 | Cast cpu_lines_to_show to integer for use in slice"
+  ansible.builtin.set_fact:
+    _cpu_n: "{{ cpu_lines_to_show | default(5) | int }}"
+
+- name: "SECTION 04 | Extract CPU utilisation summary lines for report header"
+  ansible.builtin.set_fact:
+    nxos_cpu_summary: "{{ nxos_cpu_raw_output | split('\n') | select('search', 'CPU util') | list | join('\n') }}"
+
+- name: "SECTION 04 | Extract top N CPU consumers — controlled by cpu_lines_to_show"
+  ansible.builtin.set_fact:
+    nxos_cpu_top5_str: "{{ (nxos_cpu_raw_output | split('\n') | select('search', '[0-9]+\\.[0-9]+%') | list)[: _cpu_n] | join('\n') }}"
+
+- name: "SECTION 04 | Print CPU utilisation summary to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_cpu_summary }}"
+
+- name: "SECTION 04 | Print top CPU consuming processes to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_cpu_top5_str }}"

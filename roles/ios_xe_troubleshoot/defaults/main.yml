@@ -1,0 +1,22 @@
+---
+# ============================================================
+# ROLE DEFAULTS
+# Lowest-precedence variables — safely overridden by:
+#   group_vars > host_vars > extra-vars (-e)
+#
+# These are the same vars that were defined in the play-level
+# vars block in the original single-file playbook.
+# ============================================================
+
+# Line count controls
+cpu_lines_to_show: 5        # Header + top 5 CPU processes
+mem_lines_to_show: 5       # Header + top ~12 memory consumers
+log_lines_terminal: 20      # Lines printed to terminal (show logging)
+log_lines_report: 15        # Lines written into the text report
+
+# Alert thresholds
+standard_mtu: "1500"        # MTU value considered normal
+ospf_full_state: "FULL"     # OSPF adjacency state string for healthy check
+
+# Report output
+report_dir: "./reports/"    # Directory to write per-device report files

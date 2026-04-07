@@ -1,0 +1,35 @@
+---
+# ============================================================
+# SECTION 5: MEMORY STATISTICS (SORTED)
+#
+# WHY: Memory exhaustion is a leading cause of IOS process
+#      crashes and unexpected reloads. 'sorted' puts the biggest
+#      consumers at the top so you immediately see which process
+#      is the culprit without manually scanning a long list.
+#
+# HOW:
+#   - '.splitlines()[:mem_lines_to_show]' takes the first N
+#     lines, where N is set by the role default var
+#     'mem_lines_to_show' (default: 15). This covers the IOS
+#     total-memory summary header, column headers, and roughly
+#     the top 12 processes by memory usage.
+#   - 'map('trim')' is intentionally NOT applied here. IOS uses
+#     fixed-width column spacing in this output; trimming would
+#     destroy the alignment of the Bytes Used / Bytes Free /
+#     Largest columns, making the table unreadable.
+#   - '| join('\n')' collapses the sliced list into a single
+#     string with real newlines for clean terminal display.
+#
+# Tags: memory — run alone with: --tags memory
+# ============================================================
+- name: Gather 'show processes memory sorted' Raw
+  cisco.ios.ios_command:
+    commands: show processes memory sorted
+  register: mem_raw
+  changed_when: false
+  tags: memory
+
+- name: "-> MEMORY: Top Consumers for {{ inventory_hostname }}"
+  ansible.builtin.debug:
+    msg: "{{ mem_raw.stdout[0].splitlines()[:mem_lines_to_show] | join('\n') }}"
+  tags: memory

@@ -1,0 +1,36 @@
+---
+# ============================================================
+# SECTION 9: TOPOLOGY DISCOVERY (CDP)
+#
+# WHY: CDP neighbor data maps the physical topology — knowing
+#      which device is connected to which local port is essential
+#      for rapid fault isolation and change impact assessment.
+#
+# HOW:
+#   - ntc_templates returns all keys in lowercase:
+#       neighbor_name       — neighbour hostname (may be FQDN)
+#       local_interface     — local port the neighbour is seen on
+#       neighbor_interface  — the neighbour's connected port
+#       capabilities        — device capabilities (R, S, etc.)
+#       platform            — neighbour hardware platform
+#   - 'item.neighbor_name.split('.')[0]' strips the domain suffix
+#     (e.g. 'R2.cml.lab' becomes 'R2').
+#
+# Tags: topology — run alone with: --tags topology
+# ============================================================
+- name: Gather CDP Neighbors
+  ansible.utils.cli_parse:
+    command: show cdp neighbors
+    parser:
+      name: ansible.netcommon.ntc_templates
+  register: cdp_state
+  changed_when: false
+  tags: topology
+
+- name: "-> TOPOLOGY: CDP Neighbors for {{ inventory_hostname }}"
+  ansible.builtin.debug:
+    msg: "Connected to {{ item.neighbor_name.split('.')[0] }} via local port {{ item.local_interface }}"
+  loop: "{{ cdp_state.parsed | default([]) }}"
+  loop_control:
+    label: "{{ item.neighbor_name.split('.')[0] }}"
+  tags: topology

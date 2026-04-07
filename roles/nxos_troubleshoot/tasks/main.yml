@@ -1,0 +1,51 @@
+---
+# ============================================================
+# ROLE ENTRY POINT: nxos_troubleshoot
+# IMPORTANT: import_tasks (static) must be used here instead
+# of include_tasks (dynamic). include_tasks resolves filenames
+# relative to the playbook directory at runtime, causing
+# "Could not find or access" errors. import_tasks resolves
+# relative to the role's tasks/ directory at parse time.
+# ============================================================
+
+- name: "SETUP       | Initialise timestamps and output directory"
+  ansible.builtin.import_tasks: 00_setup.yml
+
+- name: "SECTION 01  | System information"
+  ansible.builtin.import_tasks: 01_system_info.yml
+
+- name: "SECTION 02  | Device uptime and last reload reason"
+  ansible.builtin.import_tasks: 02_uptime.yml
+
+- name: "SECTION 03  | Platform health status (CPU + memory summary)"
+  ansible.builtin.import_tasks: 03_platform_health.yml
+
+- name: "SECTION 04  | CPU top consuming processes"
+  ansible.builtin.import_tasks: 04_cpu_top.yml
+
+- name: "SECTION 05  | Memory pool statistics and top consumers"
+  ansible.builtin.import_tasks: 05_memory.yml
+
+- name: "SECTION 06  | Interface operational status"
+  ansible.builtin.import_tasks: 06_interface_status.yml
+
+- name: "SECTION 07  | Interface health, MTU compliance and error counters"
+  ansible.builtin.import_tasks: 07_interface_health.yml
+
+- name: "SECTION 08  | Transceiver (SFP) optical diagnostics"
+  ansible.builtin.import_tasks: 08_sfp_diagnostics.yml
+
+- name: "SECTION 09  | Topology discovery via CDP"
+  ansible.builtin.import_tasks: 09_cdp_topology.yml
+
+- name: "SECTION 10  | OSPF neighbor adjacency state"
+  ansible.builtin.import_tasks: 10_ospf_neighbors.yml
+
+- name: "SECTION 11  | BGP peering state and prefix counts"
+  ansible.builtin.import_tasks: 11_bgp_peering.yml
+
+- name: "SECTION 12  | Recent syslog entries"
+  ansible.builtin.import_tasks: 12_recent_logs.yml
+
+- name: "REPORT      | Assemble and write health report to file"
+  ansible.builtin.import_tasks: 99_write_report.yml

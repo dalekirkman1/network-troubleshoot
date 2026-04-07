@@ -1,0 +1,47 @@
+---
+# ============================================================
+# SECTION 12: RECENT LOG MESSAGES
+#
+# WHY: The device syslog buffer captures transient events (link
+#      flaps, OSPF state changes, AAA failures, hardware errors,
+#      etc.) that may have already resolved but directly caused
+#      the issue being investigated. It is often the fastest path
+#      to root cause during troubleshooting as it provides a
+#      chronological record of what the device experienced.
+#
+# HOW:
+#   - 'show logging' returns the entire syslog buffer as a single
+#     string. It is split on '\n' and the last N lines are taken
+#     with '[-log_lines_terminal:]' — these are the most recent
+#     entries because IOS appends new log messages at the bottom
+#     of the buffer (oldest entries scroll off the top).
+#   - 'log_lines_terminal' is a role default var (default: 20)
+#     so the window size can be widened or narrowed by overriding
+#     in group_vars or host_vars without editing this task file.
+#   - 'loop_control.label: ""' suppresses the per-iteration
+#     'item=...' label in the task summary. Since each item IS
+#     the log line itself, printing it as a label would duplicate
+#     every line in the output — once as the label and once as
+#     the debug message.
+#   - The report template version of this section applies
+#     additional filtering (strip \r, select '%' lines, reject
+#     SSH/SEC_LOGIN noise) to produce a cleaner archived log.
+#     The terminal version here is intentionally unfiltered so
+#     the operator sees the raw buffer during a live run.
+#
+# Tags: logs — run alone with: --tags logs
+# ============================================================
+- name: Gather Logs
+  cisco.ios.ios_command:
+    commands: show logging
+  register: log_out
+  changed_when: false
+  tags: logs
+
+- name: -> INFO Print Recent Logs
+  ansible.builtin.debug:
+    msg: "{{ item }}"
+  loop: "{{ log_out.stdout[0].split('\n')[-log_lines_terminal:] }}"
+  loop_control:
+    label: ""
+  tags: logs

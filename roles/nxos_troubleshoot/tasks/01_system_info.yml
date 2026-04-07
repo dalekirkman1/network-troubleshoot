@@ -1,0 +1,22 @@
+---
+# ============================================================
+# SECTION 1 — SYSTEM INFO
+# Uses cisco.nxos.nxos_facts with gather_subset: all to
+# collect structured device metadata including hostname,
+# platform model, NX-OS version and serial number.
+# Facts are stored in nxos_facts for use throughout the role.
+# ============================================================
+
+- name: "SECTION 01 | Gather all NX-OS structured facts from device"
+  cisco.nxos.nxos_facts:
+    gather_subset:
+      - all
+  register: nxos_facts
+
+- name: "SECTION 01 | Print system info summary to console"
+  ansible.builtin.debug:
+    msg:
+      - "Hostname : {{ nxos_facts.ansible_facts.ansible_net_hostname }}"
+      - "Platform : {{ nxos_facts.ansible_facts.ansible_net_platform | default('N/A') }}"
+      - "Version  : {{ nxos_facts.ansible_facts.ansible_net_version }}"
+      - "Serial   : {{ nxos_facts.ansible_facts.ansible_net_serialnum | default('N/A') }}"

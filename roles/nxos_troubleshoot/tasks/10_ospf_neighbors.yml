@@ -1,0 +1,19 @@
+---
+# ============================================================
+# SECTION 10 — OSPF NEIGHBORS
+# Runs 'show ip ospf neighbors' to display adjacency state
+# (FULL/2WAY/INIT etc.) per interface. ignore_errors is set
+# as the command returns an error if OSPF is not configured,
+# which is treated as informational rather than a failure.
+# ============================================================
+
+- name: "SECTION 10 | Run show ip ospf neighbors to check adjacency state"
+  cisco.nxos.nxos_command:
+    commands:
+      - show ip ospf neighbors
+  register: nxos_ospf
+  ignore_errors: true
+
+- name: "SECTION 10 | Print OSPF neighbor adjacency state to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_ospf.stdout_lines | default([['No OSPF neighbors found or OSPF not configured.']]) }}"

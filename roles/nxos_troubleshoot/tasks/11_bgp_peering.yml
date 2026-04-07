@@ -1,0 +1,26 @@
+---
+# ============================================================
+# SECTION 11 — BGP PEERING STATE
+# 'show bgp ipv4 unicast summary' is used as the single
+# authoritative BGP command on NX-OS — it provides router-id,
+# AS number, peer counts, prefix counts, Up/Down time and
+# State/PfxRcd in a single output with no duplication.
+# NOTE: 'show bgp summary' is IOS-XE only — the NX-OS
+# equivalent is 'show bgp ipv4 unicast summary'.
+# 'show bgp sessions' was removed — it duplicates the neighbor
+# table already present in the summary output, causing the
+# peer to appear twice in the report.
+# ignore_errors is set — BGP may not be configured on all
+# devices and must not cause the role to fail.
+# ============================================================
+
+- name: "SECTION 11 | Run show bgp ipv4 unicast summary for full BGP peering state"
+  cisco.nxos.nxos_command:
+    commands:
+      - show bgp ipv4 unicast summary
+  register: nxos_bgp_summary
+  ignore_errors: true
+
+- name: "SECTION 11 | Print BGP ipv4 unicast summary to console"
+  ansible.builtin.debug:
+    msg: "{{ nxos_bgp_summary.stdout[0] | default('BGP not configured or show bgp ipv4 unicast summary failed.') }}"

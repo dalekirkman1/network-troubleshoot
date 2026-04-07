@@ -1,0 +1,61 @@
+---
+# ============================================================
+# SECTION 8: TRANSCEIVER (SFP) HEALTH
+#
+# WHY: SFP transceivers report optical Tx/Rx power levels that
+#      can indicate a degrading fibre link before it fully fails.
+#      Catching a low-power reading early allows a scheduled
+#      replacement rather than an emergency outage. However,
+#      this command is only valid on physical platforms with SFP
+#      slots — it errors on virtual platforms (CSR1000v, CML,
+#      etc.) and copper-only hardware.
+#
+# HOW:
+#   - 'ignore_errors: true' prevents the play from aborting if
+#     the command returns a Cisco error message or fails entirely.
+#   - 'failed_when: false' explicitly overrides Ansible's
+#     built-in failure detection for this task, ensuring the
+#     register variable is always populated regardless of outcome.
+#     Together, these two options guarantee the task NEVER stops
+#     the play — it always produces a result to inspect.
+#   - The INFO (Not Supported) debug task fires when any of three
+#     failure modes are true:
+#       1. transceiver_raw.failed — the module itself raised an
+#          error (e.g. connection timeout on the command).
+#       2. stdout is not defined — the register has no output key.
+#       3. '% Invalid' in stdout[0] — IOS responded with its
+#          standard "invalid input detected" error string,
+#          indicating the command is unsupported on this platform.
+#   - The Print Transceiver Data task is the logical inverse —
+#     it only fires when ALL three failure conditions are false,
+#     meaning real SFP diagnostic data is present and readable.
+#   - '| reject('equalto', '')' removes blank lines from the
+#     transceiver output before joining with newlines for display.
+#
+# Tags: transceivers — run alone with: --tags transceivers
+# ============================================================
+- name: Gather Transceiver Status (Physical Hardware Only)
+  cisco.ios.ios_command:
+    commands: show interfaces transceiver
+  register: transceiver_raw
+  changed_when: false
+  ignore_errors: true
+  failed_when: false
+  tags: transceivers
+
+- name: -> INFO Transceiver Status (Not Supported)
+  ansible.builtin.debug:
+    msg: "NOTICE: Transceiver monitoring is not supported on this virtual platform."
+  when:
+    - transceiver_raw.failed or (transceiver_raw.stdout is not defined) or (transceiver_raw.stdout | length == 0) or ("% Invalid" in transceiver_raw.stdout[0])
+  tags: transceivers
+
+- name: -> INFO Print Transceiver Data
+  ansible.builtin.debug:
+    msg: "{{ transceiver_raw.stdout[0].splitlines() | reject('equalto', '') | list | join('\n') }}"
+  when:
+    - not transceiver_raw.failed
+    - transceiver_raw.stdout is defined
+    - transceiver_raw.stdout | length > 0
+    - '"% Invalid" not in transceiver_raw.stdout[0]'
+  tags: transceivers

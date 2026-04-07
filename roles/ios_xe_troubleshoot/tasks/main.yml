@@ -1,0 +1,20 @@
+---
+# ============================================================
+# ROLE TASK ENTRY POINT
+# Imports each section task file in order.
+# import_tasks is used (not include_tasks) so that tags
+# defined in each file are inherited at the play level,
+# enabling --tags filtering to work correctly.
+# ============================================================
+- ansible.builtin.import_tasks: 00_setup.yml
+- ansible.builtin.import_tasks: 01_system_info.yml
+- ansible.builtin.import_tasks: 02_platform_health.yml
+- ansible.builtin.import_tasks: 03_cpu.yml
+- ansible.builtin.import_tasks: 04_memory.yml
+- ansible.builtin.import_tasks: 05_interfaces.yml
+- ansible.builtin.import_tasks: 06_sfp_diagnostics.yml
+- ansible.builtin.import_tasks: 07_cdp_topology.yml
+- ansible.builtin.import_tasks: 08_ospf_neigbors.yml
+- ansible.builtin.import_tasks: 09_bgp_neighbors.yml
+- ansible.builtin.import_tasks: 10_recent_logs.yml
+- ansible.builtin.import_tasks: 99_write_report.yml

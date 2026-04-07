@@ -1,0 +1,89 @@
+---
+# ============================================================
+# SECTIONS 6 & 7: INTERFACE STATUS, ERRORS & MTU
+#
+# WHY: Two separate data sources are needed to build a complete
+#      interface picture:
+#        - 'show ip interface brief' gives the status/proto
+#          columns in a compact table (fast, structured).
+#        - 'show interfaces' gives error counters, CRC counts,
+#          MTU, and description (detailed, verbose).
+#      Both are gathered BEFORE any display tasks so Sections 6
+#      and 7 share the exact same counter snapshot without an
+#      extra SSH round-trip.
+#
+# HOW (Key Names):
+#   ntc_templates returns ALL keys in lowercase.
+#   show ip interface brief keys:
+#     interface, status, proto, ip_address
+#   show interfaces keys:
+#     interface, description, link_status, protocol_status,
+#     input_errors, output_errors, crc, mtu
+#
+# Tags: interfaces — run alone with: --tags interfaces
+# ============================================================
+
+# ── Pre-fetch ────────────────────────────────────────────────
+- name: Gather 'show ip interface brief' with ntc_templates
+  ansible.utils.cli_parse:
+    command: show ip interface brief
+    parser:
+      name: ansible.netcommon.ntc_templates
+  register: intf_state
+  changed_when: false
+  tags: interfaces
+
+- name: Gather 'show interfaces' with ntc_templates
+  ansible.utils.cli_parse:
+    command: show interfaces
+    parser:
+      name: ansible.netcommon.ntc_templates
+  register: intf_health
+  changed_when: false
+  tags: interfaces
+
+# ── Section 6 — Status Display ───────────────────────────────
+# Cross-references intf_health to pull the description for each
+# interface. intf_state (show ip int brief) has status/proto.
+# intf_health (show interfaces) has description/errors/mtu.
+- name: "-> INTERFACES: Status & Descriptions for {{ inventory_hostname }}"
+  vars:
+    match_desc: "{{ (intf_health.parsed | selectattr('interface', 'equalto', item.interface) | map(attribute='description') | first) | default('No Description') }}"
+  ansible.builtin.debug:
+    msg: >-
+      {{ 'OK' if (item.status == 'up' and item.proto == 'up') else 'CRITICAL' }}:
+      Interface {{ item.interface }} ({{ match_desc }}) is {{ item.status }}/{{ item.proto }}
+  loop: "{{ intf_state.parsed | default([]) }}"
+  loop_control:
+    label: "{{ item.interface }}"
+  tags: interfaces
+
+# ── Section 6 — Error Alert (Input + CRC) ────────────────────
+- name: -> ALERT on Interface Input Errors or CRCs
+  ansible.builtin.debug:
+    msg: "WARNING: {{ item.interface }} ({{ item.description | default('No Desc') }}) has {{ item.input_errors | default(0) }} Input Errors and {{ item.crc | default(0) }} CRCs."
+  loop: "{{ intf_health.parsed | default([]) }}"
+  when: (item.input_errors | default(0) | int > 0) or (item.crc | default(0) | int > 0)
+  loop_control:
+    label: "{{ item.interface }}"
+  tags: interfaces
+
+# ── Section 7 — Full Error Alert (Input + Output + CRC) ──────
+- name: -> ALERT on Interface Errors, Output Errors or CRCs
+  ansible.builtin.debug:
+    msg: "WARNING: {{ item.interface }} has {{ item.input_errors | default(0) }} Input Errors, {{ item.output_errors | default(0) }} Output Errors, and {{ item.crc | default(0) }} CRCs."
+  loop: "{{ intf_health.parsed | default([]) }}"
+  when: (item.input_errors | default(0) | int > 0) or (item.output_errors | default(0) | int > 0) or (item.crc | default(0) | int > 0)
+  loop_control:
+    label: "{{ item.interface }}"
+  tags: interfaces
+
+# ── Section 7 — MTU Alert ────────────────────────────────────
+- name: -> ALERT on Non-Standard MTU
+  ansible.builtin.debug:
+    msg: "NOTICE: {{ item.interface }} has a non-standard MTU of {{ item.mtu }} bytes."
+  loop: "{{ intf_health.parsed | default([]) }}"
+  when: item.mtu is defined and item.mtu | string != standard_mtu
+  loop_control:
+    label: "{{ item.interface }}"
+  tags: interfaces

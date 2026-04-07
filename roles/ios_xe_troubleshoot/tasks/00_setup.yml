@@ -1,0 +1,24 @@
+---
+# ============================================================
+# SETUP: Compute report timestamp ONCE per host.
+#
+# WHY: lookup('pipe', 'date') called twice across two separate
+#      evaluations can produce different values if a second
+#      boundary is crossed between calls, causing the filename
+#      and report header to show different timestamps.
+#      set_fact evaluates the lookup once and stores the result,
+#      guaranteeing both values are always identical.
+#
+# HOW:
+#   - 'tags: always' ensures this runs even when other tags
+#     are filtered (e.g. --tags bgp), so 'report_ts' is always
+#     in scope for any task that needs it.
+#   - Two facts are set in one task:
+#       report_ts   — filename-safe format (28-03-2026_10:00:00)
+#       report_date — human-readable format for the report header
+# ============================================================
+- name: Set report timestamp for this device
+  ansible.builtin.set_fact:
+    report_ts: "{{ lookup('pipe', 'date +%d-%m-%Y_%H:%M:%S') }}"
+    report_date: "{{ lookup('pipe', 'date \"+%d-%m-%Y %H:%M:%S\"') }}"
+  tags: always

@@ -1,0 +1,90 @@
+=======================================================
+HEALTH REPORT: {{ inventory_hostname }}
+DATE: {{ report_date }}
+=======================================================
+
+
+--- 1. SYSTEM INFO ---
+Hostname: {{ inventory_hostname }}
+Software: {{ version_out.stdout[0] | trim }}
+
+--- 2. DEVICE UPTIME ---
+{{ hardware_out.stdout[0] | regex_findall('.*uptime is.*') | first | default('Uptime not found') | trim }}
+{{ hardware_out.stdout[0] | regex_findall('.*Last reload reason.*') | first | default('Last reload reason: Unknown') | trim }}
+
+
+--- 3. PLATFORM HEALTH STATUS ---
+{% set health_lines = platform_health.stdout[0].splitlines() | map('trim') | reject('equalto', '') | list %}
+{% for line in health_lines %}
+{{ line }}
+{% endfor %}
+
+
+--- 4. CPU TOP PROCESSES ---
+{% set cpu_lines = (cpu_raw.stdout[0].splitlines() | map('trim') | reject('equalto', '') | list)[:cpu_lines_to_show] %}
+{% for line in cpu_lines %}
+{{ line }}
+{% endfor %}
+
+--- 5. MEMORY STATISTICS ---
+{% set mem_lines = mem_raw.stdout[0].splitlines()[:mem_lines_to_show] %}
+{% for line in mem_lines %}
+{{ line }}
+{% endfor %}
+
+
+--- 6. INTERFACE STATUS ---
+{% for item in intf_state.parsed | default([]) %}
+{% set health_match = intf_health.parsed | selectattr('interface', 'equalto', item.interface) | list | first | default({}) %}
+{% set desc = health_match.get('description') | default('No Description') %}
+[{{ 'OK' if (item.status == 'up' and item.proto == 'up') else 'DOWN' }}] Interface {{ item.interface }} ({{ desc }}) is {{ item.status }} (Protocol: {{ item.proto }})
+{% endfor %}
+
+
+--- 7. INTERFACE HEALTH & MTU ---
+{% for item in intf_health.parsed | default([]) %}
+{{ item.interface }}: [MTU: {{ item.mtu }}] Errors: In={{ item.input_errors | default(0) }}, Out={{ item.output_errors | default(0) }}, CRC={{ item.crc | default(0) }}
+{% endfor %}
+
+
+--- 8. TRANSCEIVER (SFP) DIAGNOSTICS ---
+{% if transceiver_raw.stdout is not defined or not transceiver_raw.stdout or "% Invalid" in transceiver_raw.stdout[0] %}
+Status: Not supported on this platform (Virtual/Copper).
+{% else %}
+{% for line in transceiver_raw.stdout[0].splitlines() %}
+{{ line }}
+{% endfor %}
+{% endif %}
+
+
+--- 9. TOPOLOGY (CDP) ---
+{% for item in cdp_state.parsed | default([]) %}
+Connected to {{ item.neighbor_name.split('.')[0] }} via {{ item.local_interface }}
+{% endfor %}
+
+
+--- 10. OSPF NEIGHBORS ---
+{% if ospf_state_available | default(false) %}
+{% for item in ospf_state.parsed | default([]) %}
+Neighbor {{ item.neighbor_id }} is {{ item.state }} on {{ item.interface }}
+{% endfor %}
+{% else %}
+OSPF not configured on this device.
+{% endif %}
+
+
+--- 11. BGP PEERING STATE ---
+{% if bgp_state_available | default(false) %}
+{% for line in bgp_raw.stdout[0].splitlines() %}
+{{ line }}
+{% endfor %}
+{% else %}
+BGP not configured on this device.
+{% endif %}
+
+
+--- 12. RECENT LOGS ---
+{% set log_list = (log_out.stdout[0] | replace('\r', '')).split('\n') | select('search', '%') | reject('search', 'SSH|SEC_LOGIN') | list %}
+{% for log_line in log_list[-log_lines_report:] %}
+{{ log_line }}
+{% endfor %}

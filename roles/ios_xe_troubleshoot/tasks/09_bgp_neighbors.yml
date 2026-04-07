@@ -1,0 +1,93 @@
+---
+# ============================================================
+# SECTION 11: BGP PEERING STATE
+#
+# WHY: A BGP peer that is down means the device is no longer
+#      exchanging prefixes with that neighbour — a critical
+#      routing fault that may not trigger any interface alarm.
+#
+# HOW — Dual-approach (Raw + Parsed):
+#   - RAW task prints the full BGP summary table as-is to the
+#     terminal, preserving Cisco's native column layout which
+#     is immediately familiar to network engineers.
+#   - PARSED task uses ntc_templates to produce structured dicts
+#     for programmatic alerting on down peers.
+#
+# HOW — Down Peer Detection:
+#   - When a BGP session is UP, 'state_or_prefixes_received'
+#     contains a NUMBER (e.g. '0', '1', '254').
+#   - When DOWN, IOS puts a TEXT STATE in that field
+#     (e.g. 'Idle', 'Active', 'Connect', 'OpenSent').
+#   - regex_search('[a-zA-Z]') detects any letter in the field —
+#     if found, the peer is down. This avoids hard-coding every
+#     possible BGP FSM state name.
+#
+# HOW — ntc_templates key names (all lowercase):
+#   bgp_neighbor               — neighbour IP address
+#   state_or_prefixes_received — number if up, text state if down
+#   local_as                   — local AS number
+#   neighbor_as                — neighbour AS number
+#   router_id                  — local BGP router-id
+#   up_down                    — session uptime or time since down
+#   messages_received          — total messages received
+#   messages_sent              — total messages sent
+#
+# HOW — Block/Rescue:
+#   - BGP is optional. The rescue sets 'bgp_state_available: false'
+#     and populates safe stub variables so the report template
+#     never references an undefined variable.
+#
+# Tags: bgp — run alone with: --tags bgp
+# ============================================================
+- name: BGP Peering State Block
+  block:
+    - name: Gather 'show ip bgp summary' Raw (For Terminal Display)
+      cisco.ios.ios_command:
+        commands: show ip bgp summary
+      register: bgp_raw
+      changed_when: false
+
+    - name: "-> BGP: Summary Table for {{ inventory_hostname }}"
+      ansible.builtin.debug:
+        msg: "{{ bgp_raw.stdout[0].splitlines() | join('\n') }}"
+
+    - name: Gather 'show ip bgp summary' Parsed (For Alerts)
+      ansible.utils.cli_parse:
+        command: show ip bgp summary
+        parser:
+          name: ansible.netcommon.ntc_templates
+      register: bgp_state
+      changed_when: false
+
+    - name: Set BGP availability flag (configured)
+      ansible.builtin.set_fact:
+        bgp_state_available: true
+
+    - name: -> ALERT on Down BGP Peers
+      ansible.builtin.debug:
+        msg: "CRITICAL: BGP Peer {{ item.bgp_neighbor }} is down (State: {{ item.state_or_prefixes_received }})"
+      loop: "{{ bgp_state.parsed | default([]) }}"
+      when:
+        - bgp_state.parsed is defined
+        - bgp_state.parsed is not none
+        # state_or_prefixes_received contains a number when UP (e.g. '1')
+        # and a text state when DOWN (e.g. 'Idle', 'Active', 'Connect').
+        # regex_search('[a-zA-Z]') returns a match only when text is present.
+        - item.state_or_prefixes_received | string | regex_search('[a-zA-Z]') is not none
+      loop_control:
+        label: "{{ item.bgp_neighbor }}"
+
+  rescue:
+    - name: -> NOTICE BGP not configured or command failed
+      ansible.builtin.debug:
+        msg: "NOTICE: BGP does not appear to be configured on {{ inventory_hostname }} — skipping BGP section."
+
+    - name: Set BGP availability flag (not configured)
+      ansible.builtin.set_fact:
+        bgp_state_available: false
+        bgp_raw:
+          stdout: ["BGP not configured on this device."]
+        bgp_state:
+          parsed: []
+
+  tags: bgp

@@ -1,0 +1,20 @@
+---
+# ============================================================
+# SECTION 2 — DEVICE UPTIME
+# Runs 'show version' to extract kernel uptime and the last
+# reload reason. NX-OS reports uptime in 'show version' under
+# the 'Kernel uptime' line, unlike IOS-XE which embeds it in
+# the hostname uptime line.
+# ============================================================
+
+- name: "SECTION 02 | Run show version to collect uptime and reload reason"
+  cisco.nxos.nxos_command:
+    commands:
+      - show version
+  register: nxos_version
+
+- name: "SECTION 02 | Print uptime and last reload reason to console"
+  ansible.builtin.debug:
+    msg:
+      - "Uptime      : {{ nxos_version.stdout[0] | regex_search('Kernel uptime[^\n]*') | default('Not found — check show version output') }}"
+      - "Last reload : {{ nxos_version.stdout[0] | regex_search('reason:[^\n]*') | default('N/A') }}"

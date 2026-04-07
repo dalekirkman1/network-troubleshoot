@@ -1,0 +1,30 @@
+---
+# ============================================================
+# MASTER ENTRY POINT
+#
+# Run all sections:
+#   ansible-playbook main.yml
+#
+# Run specific sections by tag:
+#   ansible-playbook main.yml --tags bgp,ospf
+#
+# Target a single device:
+#   ansible-playbook main.yml --limit router1
+#
+# Use the lab inventory instead of production:
+#   ansible-playbook main.yml -i inventory/lab/hosts.yml
+#
+# Dry run (check mode):
+#   ansible-playbook main.yml --check
+# ============================================================
+- name: IOS-XE Health Troubleshooting
+  hosts: ios_xe
+  gather_facts: no
+  roles:
+    - ios_xe_troubleshoot
+
+- name: NX-OS Health Troubleshooting
+  hosts: nxos
+  gather_facts: no
+  roles:
+    - nxos_troubleshoot

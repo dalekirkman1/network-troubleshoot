@@ -1,0 +1,19 @@
+---
+# ============================================================
+# GROUP VARS — NX-OS GROUP ONLY
+# These override defaults/main.yml for all production devices.
+# ============================================================
+ansible_network_os: cisco.nxos.nxos
+ansible_connection: ansible.netcommon.network_cli
+ansible_user: "{{ vault_ansible_user }}"
+ansible_password: "{{ vault_ansible_password }}"
+ansible_become: true
+ansible_become_method: enable
+ansible_become_password: "{{ vault_ansible_become_password }}"
+
+# Paramiko-specific — prevents public key exhaustion
+ansible_paramiko_look_for_keys: false
+ansible_paramiko_host_key_checking: false
+
+standard_mtu: "1500"
+report_dir: "./reports/"

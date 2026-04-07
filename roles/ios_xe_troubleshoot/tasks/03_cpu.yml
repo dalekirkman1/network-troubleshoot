@@ -1,0 +1,37 @@
+---
+# ============================================================
+# SECTION 4: CPU PROCESS (SORTED)
+#
+# WHY: 'sorted 5sec' orders processes by their CPU consumption
+#      over the last 5 seconds — the most relevant window for
+#      an active issue. Identifying a runaway process is faster
+#      than reading the default unsorted output which lists
+#      processes in creation order rather than impact order.
+#
+# HOW:
+#   - '.split('\n')[:cpu_lines_to_show]' splits on literal
+#     newlines and takes the first N lines, where N is set by
+#     the role default var 'cpu_lines_to_show' (default: 7).
+#     This captures the IOS CPU summary header line, the column
+#     header, and the top 5 processes — the most actionable
+#     slice without requiring terminal scrolling.
+#   - '| join('\n')' re-joins them with newlines so the debug
+#     module prints a human-readable table rather than a
+#     Python list literal like ['line1', 'line2'].
+#   - 'cpu_lines_to_show' is a role default var so it can be
+#     overridden per-group or per-host in group_vars/host_vars
+#     without touching the task file itself.
+#
+# Tags: cpu — run alone with: --tags cpu
+# ============================================================
+- name: Gather 'show processes cpu sorted 5sec' Raw
+  cisco.ios.ios_command:
+    commands: show processes cpu sorted 5sec
+  register: cpu_raw
+  changed_when: false
+  tags: cpu
+
+- name: "-> CPU: Top {{ cpu_lines_to_show }} Processes for {{ inventory_hostname }}"
+  ansible.builtin.debug:
+    msg: "{{ cpu_raw.stdout[0].split('\n')[:cpu_lines_to_show] | join('\n') }}"
+  tags: cpu
