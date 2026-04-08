@@ -1,0 +1,7 @@
+---
+- name: 1. System info
+  cisco.asa.asa_command:
+    commands:
+      - show version
+      - show inventory
+  register: asa_system_info

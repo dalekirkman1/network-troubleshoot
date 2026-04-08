@@ -1,0 +1,9 @@
+---
+- name: 11. Flow, NAT, and connection state
+  cisco.asa.asa_command:
+    commands:
+      - show conn count
+      - show xlate count
+      - show local-host
+      - show nat detail
+  register: asa_flow_state

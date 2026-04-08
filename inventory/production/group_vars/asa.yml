@@ -1,0 +1,8 @@
+---
+# ============================================================
+# GROUP VARS — Cisco ASA Hardware
+# ansible_network_os moved here from all.yml so it only
+# ============================================================
+ansible_network_os: cisco.asa.asa
+ansible_connection: network_cli
+ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

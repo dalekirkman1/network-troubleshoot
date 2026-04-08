@@ -17,14 +17,21 @@
 # Dry run (check mode):
 #   ansible-playbook main.yml --check
 # ============================================================
-- name: IOS-XE Health Troubleshooting
+- name: Cisco IOS-XE Troubleshooting
   hosts: ios_xe
   gather_facts: no
   roles:
     - ios_xe_troubleshoot
 
-- name: NX-OS Health Troubleshooting
+- name: Cisco NX-OS Troubleshooting
   hosts: nxos
   gather_facts: no
   roles:
     - nxos_troubleshoot
+
+- name: Cisco ASA Troubleshooting
+  hosts: asa
+  gather_facts: no
+  roles:
+    - asa_troubleshoot
+    

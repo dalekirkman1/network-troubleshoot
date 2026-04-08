@@ -1,0 +1,7 @@
+---
+- name: 8. Transceiver diagnostics equivalent
+  cisco.asa.asa_command:
+    commands:
+      - show inventory
+      - show interface
+  register: asa_transceiver

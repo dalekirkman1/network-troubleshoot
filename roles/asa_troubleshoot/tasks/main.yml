@@ -1,0 +1,21 @@
+---
+# ============================================================
+# ROLE TASK ENTRY POINT
+# Imports each section task file in order.
+# import_tasks is used (not include_tasks) so that tags
+# defined in each file are inherited at the play level,
+# enabling --tags filtering to work correctly.
+# ============================================================
+- import_tasks: 01_system_info.yml
+- import_tasks: 02_uptime.yml
+- import_tasks: 03_platform_health.yml
+- import_tasks: 04_cpu_top_processes.yml
+- import_tasks: 05_memory_statistics.yml
+- import_tasks: 06_interface_status.yml
+- import_tasks: 07_interface_health.yml
+- import_tasks: 08_transceiver_equivalent.yml
+- import_tasks: 09_topology.yml
+- import_tasks: 10_routing_state.yml
+- import_tasks: 11_flow_nat_state.yml
+- import_tasks: 12_recent_logs.yml
+- import_tasks: 99_display_results.yml

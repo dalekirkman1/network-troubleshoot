@@ -1,0 +1,7 @@
+---
+- name: 9. Topology and neighbor data
+  cisco.asa.asa_command:
+    commands:
+      - show arp
+      - show route
+  register: asa_topology

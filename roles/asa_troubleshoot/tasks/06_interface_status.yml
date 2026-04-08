@@ -1,0 +1,7 @@
+---
+- name: 6. Interface status
+  cisco.asa.asa_command:
+    commands:
+      - show interface ip brief
+      - show interface summary
+  register: asa_interface_status

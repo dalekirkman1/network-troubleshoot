@@ -1,0 +1,16 @@
+---
+- name: Display ASA health data
+  debug:
+    msg:
+      system_info: "{{ asa_system_info.stdout }}"
+      uptime: "{{ asa_uptime.stdout }}"
+      platform_health: "{{ asa_platform_health.stdout }}"
+      cpu_top: "{{ asa_cpu_top.stdout }}"
+      memory: "{{ asa_memory.stdout }}"
+      interface_status: "{{ asa_interface_status.stdout }}"
+      interface_health: "{{ asa_interface_health.stdout }}"
+      transceiver: "{{ asa_transceiver.stdout }}"
+      topology: "{{ asa_topology.stdout }}"
+      routing: "{{ asa_routing.stdout }}"
+      flow_state: "{{ asa_flow_state.stdout }}"
+      logs: "{{ asa_logs.stdout }}"

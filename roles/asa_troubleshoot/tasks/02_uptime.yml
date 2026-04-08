@@ -1,0 +1,6 @@
+---
+- name: 2. Device uptime
+  cisco.asa.asa_command:
+    commands:
+      - show version
+  register: asa_uptime

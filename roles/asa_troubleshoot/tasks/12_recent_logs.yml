@@ -1,0 +1,6 @@
+---
+- name: 12. Recent logs
+  cisco.asa.asa_command:
+    commands:
+      - show logging | tail
+  register: asa_logs

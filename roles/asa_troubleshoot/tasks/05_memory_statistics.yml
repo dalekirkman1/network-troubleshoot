@@ -1,0 +1,7 @@
+---
+- name: 5. Memory statistics
+  cisco.asa.asa_command:
+    commands:
+      - show memory
+      - show blocks
+  register: asa_memory

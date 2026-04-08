@@ -1,0 +1,7 @@
+---
+- name: 10. Routing and neighbor state
+  cisco.asa.asa_command:
+    commands:
+      - show ospf neighbor
+      - show route
+  register: asa_routing

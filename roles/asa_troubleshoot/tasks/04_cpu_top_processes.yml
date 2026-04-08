@@ -1,0 +1,6 @@
+---
+- name: 4. CPU top processes
+  cisco.asa.asa_command:
+    commands:
+      - show processes cpu-usage non-zero sorted
+  register: asa_cpu_top
