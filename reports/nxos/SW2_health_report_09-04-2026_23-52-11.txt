@@ -1,0 +1,188 @@
+=======================================================
+HEALTH REPORT: SW2
+DATE: 09-04-2026_23-52-11
+=======================================================
+
+
+--- 1. SYSTEM INFO ---
+Hostname: SW2
+Platform: N9K-C9300v
+Software: NX-OS Version 10.5(3)
+Serial:   97WY01ONC22
+
+
+--- 2. DEVICE UPTIME ---
+Kernel uptime is 1 day(s), 20 hour(s), 13 minute(s), 39 second(s)
+Last reload reason: 
+
+
+--- 3. PLATFORM HEALTH STATUS ---
+Load average:   1 minute: 0.17   5 minutes: 0.24   15 minutes: 0.27
+Processes   :   829 total, 1 running
+CPU states  :   4.02% user,   4.02% kernel,   91.95% idle
+        CPU0 states  :   6.06% user,   4.04% kernel,   89.89% idle
+        CPU1 states  :   2.04% user,   3.06% kernel,   94.89% idle
+Memory usage:   12252008K total,   5448360K used,   6803648K free
+Kernel vmalloc:   0K total,   0K free
+Kernel buffers:   88084K Used
+Kernel cached :   2272440K Used
+Current memory status: OK
+
+
+--- 4. CPU TOP PROCESSES ---
+CPU util  :    1.02% user,    3.57% kernel,   95.40% idle
+CPU utilization for five seconds: 13%/1%; one minute: 14%; five minutes: 13%
+
+Top 5 Processes by CPU:
+PID    Runtime(ms)  Invoked   uSecs  1Sec    Process
+-----  -----------  --------  -----  ------  -----------
+    1         1726     32449     53   0.00%  init
+ 5377            8       222     36   0.00%  bootflash_sync.
+ 5401            2       201      9   0.00%  inotifywait
+ 6094           14        84    166   0.00%  xinetd
+ 6095            6        21    285   0.00%  tftpd
+
+
+--- 5. MEMORY STATISTICS ---
+Memory Pool Summary:
+Load average:   1 minute: 0.32   5 minutes: 0.27   15 minutes: 0.28
+Processes   :   823 total, 1 running
+CPU states  :   0.51% user,   2.57% kernel,   96.90% idle
+        CPU0 states  :   1.03% user,   2.06% kernel,   96.90% idle
+        CPU1 states  :   1.04% user,   2.08% kernel,   96.87% idle
+Memory usage:   12252008K total,   5446644K used,   6805364K free
+Kernel vmalloc:   0K total,   0K free
+Kernel buffers:   88084K Used
+Kernel cached :   2272384K Used
+Current memory status: OK
+
+Top 5 Processes by Memory:
+    1       228  0           2636        7fff6f1bb7f0/0             init
+ 5377       436  0           4124        7ffdcc2cf790/0             bootflash_sync.
+ 5401       448  0           2888        7ffebcebd240/0             inotifywait
+ 6094       376  1201444     3156        7fffbce93fa0/0             xinetd
+ 6095      8812  578397      12484           ff8696d0/0             tftpd
+
+
+ --- 6. INTERFACE STATUS ---
+\n\nDown/Disabled interfaces (0 total):\n
+
+
+--- 7. INTERFACE HEALTH & MTU ---
+Ethernet1/1: [MTU: 9216] [MTU MISMATCH] Errors: In=0, Out=0, CRC=0
+Ethernet1/10: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/11: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/12: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/13: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/14: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/15: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/16: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/17: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/18: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/19: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/2: [MTU: 9216] [MTU MISMATCH] Errors: In=0, Out=0, CRC=0
+Ethernet1/20: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/21: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/22: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/23: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/24: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/25: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/26: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/27: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/28: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/29: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/3: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/30: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/31: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/32: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/33: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/34: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/35: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/36: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/37: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/38: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/39: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/4: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/40: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/41: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/42: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/43: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/44: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/45: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/46: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/47: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/48: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/49: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/5: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/50: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/51: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/52: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/53: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/54: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/55: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/56: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/57: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/58: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/59: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/6: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/60: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/61: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/62: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/63: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/64: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/7: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/8: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Ethernet1/9: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+loopback0: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+mgmt0: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+Vlan1: [MTU: 1500]  Errors: In=0, Out=0, CRC=0
+
+
+--- 8. TRANSCEIVER (SFP) DIAGNOSTICS ---
+Status: Virtual/copper platform — transceiver not applicable on all interfaces.   
+
+
+--- 9. TOPOLOGY (CDP) ---
+Connected to SW1 via Eth1/1 (neighbor port: Eth1/1)
+
+
+--- 10. OSPF NEIGHBORS ---
+OSPF Process ID NXOS_LAB VRF default
+ Total number of neighbors: 1
+ Neighbor ID     Pri State            Up Time  Address         Interface
+ 3.3.3.3           1 FULL/ -          1d20h    10.21.21.1      Eth1/1
+
+
+--- 11. BGP PEERING STATE ---
+BGP summary information for VRF default, address family IPv4 Unicast
+BGP router identifier 4.4.4.4, local AS number 65002
+BGP table version is 5, IPv4 Unicast config peers 1, capable peers 1
+2 network entries and 2 paths using 728 bytes of memory
+BGP attribute entries [2/736], BGP AS path entries [0/0]
+BGP community entries [0/0], BGP clusterlist entries [0/0]
+
+Neighbor        V    AS    MsgRcvd    MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.21.21.1      4 65002       2654       2653        5    0    0    1d20h 1     
+
+
+--- 12. RECENT LOGS ---
+2026 Apr  8 03:44:44.721 SW2 %VDC_MGR-5-VDC_STATE_CHANGE: vdc 1 state changed to active 
+2026 Apr  8 03:44:47.743 SW2 %ETHPORT-5-IF_DOWN_ADMIN_DOWN: Interface Ethernet1/2 is down (Administratively down)
+2026 Apr  8 03:44:47.879 SW2 %PLATFORM-5-MOD_STATUS: LC sub Module 1 current-status is MOD_STATUS_ONLINE/OK
+2026 Apr  8 03:44:47.891 SW2 %MODULE-5-MOD_OK: Module 1 is online (Serial number: 9YS1ABJDXLT)
+2026 Apr  8 03:44:47.897 SW2 %USER-SLOT1-5-SYSTEM_MSG: bcm_usd_callback_lc_online:249: LC_ONLINE 
+2026 Apr  8 03:44:48.638 SW2 %ETHPORT-5-SPEED: Interface Ethernet1/1, operational speed changed to 1 Gbps
+2026 Apr  8 03:44:48.638 SW2 %ETHPORT-5-IF_DUPLEX: Interface Ethernet1/1, operational duplex mode changed to Full
+2026 Apr  8 03:44:48.638 SW2 %ETHPORT-5-IF_RX_FLOW_CONTROL: Interface Ethernet1/1, operational Receive Flow Control state changed to off
+2026 Apr  8 03:44:48.638 SW2 %ETHPORT-5-IF_TX_FLOW_CONTROL: Interface Ethernet1/1, operational Transmit Flow Control state changed to off
+2026 Apr  8 03:44:48.668 SW2 %ETHPORT-5-SPEED: Interface Ethernet1/3, operational speed changed to 1 Gbps
+2026 Apr  8 03:44:48.668 SW2 %ETHPORT-5-IF_DUPLEX: Interface Ethernet1/3, operational duplex mode changed to Full
+2026 Apr  8 03:44:48.668 SW2 %ETHPORT-5-IF_RX_FLOW_CONTROL: Interface Ethernet1/3, operational Receive Flow Control state changed to off
+2026 Apr  8 03:44:48.668 SW2 %ETHPORT-5-IF_TX_FLOW_CONTROL: Interface Ethernet1/3, operational Transmit Flow Control state changed to off
+2026 Apr  8 03:44:48.971 SW2 %ETHPORT-5-IF_UP: Interface Ethernet1/1 is up in Layer3
+2026 Apr  8 03:44:49.154 SW2 %ETHPORT-5-IF_UP: Interface Ethernet1/3 is up in mode access
+2026 Apr  8 03:44:49.221 SW2 %ASCII-CFG-2-CONF_CONTROL: System ready
+2026 Apr  8 03:44:58.812 SW2 %OSPF-5-ADJCHANGE:  ospf-NXOS_LAB [9925]  Nbr 10.21.21.1 on Ethernet1/1 went EXSTART
+2026 Apr  8 03:45:03.974 SW2 %OSPF-5-ADJCHANGE:  ospf-NXOS_LAB [9925]  Nbr 10.21.21.1 on Ethernet1/1 went FULL
+2026 Apr  8 03:45:11.049 SW2 %BGP-5-ADJCHANGE:  bgp-65002 [9920] (default) neighbor 10.21.21.1 Up 
+2026 Apr  8 03:46:04.008 SW2 %USER-2-SYSTEM_MSG: Thirdparty RPMs installation succeeded - thirdparty_install.py

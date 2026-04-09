@@ -1,0 +1,102 @@
+=======================================================
+HEALTH REPORT: R3
+DATE: 09-04-2026 23:39:18
+=======================================================
+
+
+--- 1. SYSTEM INFO ---
+Hostname: R3
+Software: Cisco IOS Software [IOSXE], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 17.16.1a, RELEASE SOFTWARE (fc1)
+
+--- 2. DEVICE UPTIME ---
+R3 uptime is 1 day, 19 hours, 59 minutes
+Last reload reason: reload
+
+
+--- 3. PLATFORM HEALTH STATUS ---
+Load Average
+Slot  Status  1-Min  5-Min 15-Min
+RP0 Healthy   0.40   0.51   0.49
+Memory (kB)
+Slot  Status    Total     Used (Pct)     Free (Pct) Committed (Pct)
+RP0 Healthy  3960372  2541860 (64%)  1418512 (36%)   3616120 (91%)
+CPU Utilization
+Slot  CPU   User System   Nice   Idle    IRQ   SIRQ IOwait
+RP0    0   6.35   8.13   0.01  85.46   0.00   0.03   0.00
+
+
+--- 4. CPU TOP PROCESSES ---
+CPU utilization for five seconds: 2%/0%; one minute: 1%; five minutes: 0%
+PID Runtime(ms)     Invoked      uSecs   5Sec   1Min   5Min TTY Process
+321         100         289        346  0.71%  0.12%  0.02% 434 SSH Process
+124        2607       24932        104  0.23%  0.03%  0.00%   0 IOSXE-RP Punt Se
+195       92288     4892157         18  0.15%  0.06%  0.07%   0 IPAM Manager
+
+--- 5. MEMORY STATISTICS ---
+Processor Pool Total: 1695017688 Used:  207909376 Free: 1487108312
+reserve P Pool Total:     102404 Used:         88 Free:     102316
+ lsmpi_io Pool Total:    3149400 Used:    3148568 Free:        832
+
+ PID TTY  Allocated      Freed    Holding    Getbufs    Retbufs Process
+
+
+--- 6. INTERFACE STATUS ---
+[OK] Interface GigabitEthernet1 (MANAGEMENT) is up (Protocol: up)
+[OK] Interface GigabitEthernet2 (LINK_TO_R2) is up (Protocol: up)
+[DOWN] Interface GigabitEthernet3 () is down (Protocol: down)
+[DOWN] Interface GigabitEthernet4 () is down (Protocol: down)
+[OK] Interface Loopback100 (INTENTIONAL_FAILURE) is up (Protocol: up)
+
+
+--- 7. INTERFACE HEALTH & MTU ---
+GigabitEthernet1: [MTU: 1500] Errors: In=0, Out=0, CRC=0
+GigabitEthernet2: [MTU: 1500] Errors: In=0, Out=0, CRC=0
+GigabitEthernet3: [MTU: 1500] Errors: In=0, Out=0, CRC=0
+GigabitEthernet4: [MTU: 1500] Errors: In=0, Out=0, CRC=0
+Loopback100: [MTU: 1514] Errors: In=0, Out=0, CRC=0
+
+
+--- 8. TRANSCEIVER (SFP) DIAGNOSTICS ---
+Status: Not supported on this platform (Virtual/Copper).
+
+
+--- 9. TOPOLOGY (CDP) ---
+Connected to R2 via Gig 2
+
+
+--- 10. OSPF NEIGHBORS ---
+Neighbor 2.2.2.2 is FULL/BDR on GigabitEthernet2
+
+
+--- 11. BGP PEERING STATE ---
+BGP router identifier 3.3.3.3, local AS number 65001
+BGP table version is 2, main routing table version 2
+1 network entries using 248 bytes of memory
+1 path entries using 136 bytes of memory
+1/1 BGP path/bestpath attribute entries using 296 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 680 total bytes of memory
+BGP activity 1/0 prefixes, 1/0 paths, scan interval 60 secs
+1 networks peaked at 03:40:21 Apr 8 2026 UTC (1d19h ago)
+
+Neighbor        V           AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.23.23.2      4        65001    2908    2909        2    0    0 1d19h           0
+
+
+--- 12. RECENT LOGS ---
+*Apr  8 03:40:29.879: %LINK-3-UPDOWN: Interface GigabitEthernet1, changed state to up
+*Apr  8 03:40:29.911: %LINK-3-UPDOWN: Interface GigabitEthernet2, changed state to up
+*Apr  8 03:40:30.880: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet1, changed state to up
+*Apr  8 03:40:30.911: %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet2, changed state to up
+*Apr  8 03:40:34.484: %BGP-5-ADJCHANGE: neighbor 10.23.23.2 Up 
+*Apr  8 03:40:39.266: %PKI-6-SUDI_INFO: PKI: platform doesn't support sudi certificate
+*Apr  8 03:40:39.266: %PKI-6-SUDI_INFO: PKI: no sudi certificate is installed
+*Apr  8 03:40:39.266: %PKI-2-NON_AUTHORITATIVE_CLOCK: PKI functions can not be initialized until an authoritative time source, like NTP, can be obtained.
+*Apr  8 03:40:39.267: %PKI-6-TRUSTPOINT_CREATE: Trustpoint: TP-self-signed-2239993602 created succesfully
+*Apr  8 03:40:39.614: %CRYPTO_ENGINE-5-KEY_ADDITION: A key named TP-self-signed-2239993602 has been generated or imported by crypto-engine
+*Apr  8 03:40:39.637: %PKI-4-NOCONFIGAUTOSAVE: Configuration was modified.  Issue "write memory" to save new IOS PKI configuration
+*Apr  8 03:41:10.929: %OSPF-5-ADJCHG: Process 1, Nbr 2.2.2.2 on GigabitEthernet2 from LOADING to FULL, Loading Done
+*Apr  8 03:42:14.338: %SMART_LIC-3-COMM_FAILED: Communications failure with the Cisco Smart License Utility (CSLU) : Unable to resolve server hostname/domain name 
+*Apr  9 23:19:10.453: %SYS-6-LOGOUT: User cisco has exited tty session 434(172.16.12.21)
+*Apr  9 23:32:41.760: %SYS-6-LOGOUT: User cisco has exited tty session 434(172.16.12.21)

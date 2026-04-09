@@ -20,18 +20,24 @@
 - name: Cisco IOS-XE Troubleshooting
   hosts: ios_xe
   gather_facts: no
+  vars_files:
+    - inventory/production/group_vars/ios_xe.yml
   roles:
     - ios_xe_troubleshoot
 
 - name: Cisco NX-OS Troubleshooting
   hosts: nxos
   gather_facts: no
+  vars_files:
+    - inventory/production/group_vars/nxos.yml
   roles:
     - nxos_troubleshoot
 
 - name: Cisco ASA Troubleshooting
   hosts: asa
   gather_facts: no
+  vars_files:
+    - inventory/production/group_vars/asa.yml
   roles:
     - asa_troubleshoot
     

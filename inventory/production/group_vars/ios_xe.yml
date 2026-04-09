@@ -6,6 +6,16 @@
 # ============================================================
 ansible_network_os: cisco.ios.ios
 ansible_connection: network_cli
-ansible_become: false
+
+#SSH connection parameters
+ansible_user: "{{ vault_ios_xe_user }}"
+ansible_password: "{{ vault_ios_xe_password }}"
+ansible_ssh_common_args: "-o PreferredAuthentications=password -o PubkeyAuthentication=no"
+
+# Privilege escalation parameters
+ansible_become: true
+ansible_become_method: enable
+ansible_become_password: "{{ vault_ios_xe_enable_password }}"
+
 standard_mtu: "1500"
-report_dir: "./reports/"
+report_dir: "./reports/ios_xe/"

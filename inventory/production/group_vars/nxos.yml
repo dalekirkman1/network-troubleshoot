@@ -5,15 +5,20 @@
 # ============================================================
 ansible_network_os: cisco.nxos.nxos
 ansible_connection: ansible.netcommon.network_cli
-ansible_user: "{{ vault_ansible_user }}"
-ansible_password: "{{ vault_ansible_password }}"
+
+#SSH connection parameters
+ansible_user: "{{ vault_nxos_user }}"
+ansible_password: "{{ vault_nxos_password }}"
+ansible_ssh_common_args: "-o PreferredAuthentications=password -o PubkeyAuthentication=no"
+
+# Privilege escalation parameters
 ansible_become: true
 ansible_become_method: enable
-ansible_become_password: "{{ vault_ansible_become_password }}"
+ansible_become_password: "{{ vault_nxos_enable_password }}"
 
 # Paramiko-specific — prevents public key exhaustion
 ansible_paramiko_look_for_keys: false
 ansible_paramiko_host_key_checking: false
 
 standard_mtu: "1500"
-report_dir: "./reports/"
+report_dir: "./reports/nxos/"
