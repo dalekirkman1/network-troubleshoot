@@ -4,3 +4,7 @@
     commands:
       - show processes cpu-usage non-zero sorted
   register: asa_cpu_top
+  
+- name: Debug CPU top processes    
+  debug:
+    var: asa_cpu_top.stdout

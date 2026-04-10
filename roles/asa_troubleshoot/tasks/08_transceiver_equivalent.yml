@@ -5,3 +5,7 @@
       - show inventory
       - show interface
   register: asa_transceiver
+  
+- name: Debug transceiver diagnostics
+  debug:
+    var: asa_transceiver.stdout

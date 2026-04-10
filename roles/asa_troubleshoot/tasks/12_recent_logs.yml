@@ -2,5 +2,9 @@
 - name: 12. Recent logs
   cisco.asa.asa_command:
     commands:
-      - show logging | tail
+      - show logging
   register: asa_logs
+
+- name: Debug recent logs (first 50 lines)
+  debug:
+    msg: "{{ asa_logs.stdout[0].split('\n')[:50] }}"

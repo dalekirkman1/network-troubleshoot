@@ -5,3 +5,7 @@
       - show ospf neighbor
       - show route
   register: asa_routing
+  
+- name: Debug routing and neighbor state
+  debug:
+    var: asa_routing.stdout

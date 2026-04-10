@@ -5,3 +5,7 @@
       - show memory
       - show blocks
   register: asa_memory
+  
+- name: Debug memory statistics
+  debug:
+    var: asa_memory.stdout

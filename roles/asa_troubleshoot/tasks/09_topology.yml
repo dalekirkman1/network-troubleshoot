@@ -5,3 +5,7 @@
       - show arp
       - show route
   register: asa_topology
+  
+- name: Debug topology and neighbor data
+  debug:
+    var: asa_topology.stdout

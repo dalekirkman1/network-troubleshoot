@@ -6,3 +6,7 @@
       - show memory
       - show processes cpu-usage non-zero sorted
   register: asa_platform_health
+  
+- name: Debug platform health
+  debug:
+    var: asa_platform_health.stdout

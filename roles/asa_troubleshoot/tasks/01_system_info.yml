@@ -5,3 +5,7 @@
       - show version
       - show inventory
   register: asa_system_info
+  
+- name: Debug system info
+  debug:
+    var: asa_system_info.stdout

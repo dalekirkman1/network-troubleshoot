@@ -7,3 +7,7 @@
       - show local-host
       - show nat detail
   register: asa_flow_state
+
+- name: Debug flow, NAT, and connection state
+  debug:
+    var: asa_flow_state.stdout

@@ -4,3 +4,7 @@
     commands:
       - show interface
   register: asa_interface_health
+  
+- name: Debug interface health
+  debug:
+    var: asa_interface_health.stdout

@@ -4,3 +4,7 @@
     commands:
       - show version
   register: asa_uptime
+  
+- name: Debug uptime
+  debug:
+      var: asa_uptime.stdout

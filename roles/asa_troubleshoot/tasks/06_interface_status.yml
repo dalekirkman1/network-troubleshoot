@@ -5,3 +5,7 @@
       - show interface ip brief
       - show interface summary
   register: asa_interface_status
+  
+- name: Debug interface status
+  debug:
+    var: asa_interface_status.stdout
