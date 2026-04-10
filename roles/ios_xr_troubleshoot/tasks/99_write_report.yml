@@ -36,15 +36,9 @@
 
 
 
-      --- 3. PLATFORM HEALTH (CPU / MEMORY / ENV / PLATFORM) ---
-      CPU:
-      {{ iosxr_cpu_overview | default('CPU summary not available') }}
-
-      Memory:
-      {{ iosxr_memory_overview | default('Memory summary not available') }}
-
+      --- 3. PLATFORM HEALTH (ENV / PLATFORM) ---
       Environment:
-      {{ iosxr_env_overview | default('Environment summary not available') }}
+      {{ iosxr_env_overview | default('Environment information not available') }}
 
       Platform:
       {{ iosxr_platform_overview | default('Platform overview not available') }}
@@ -57,10 +51,11 @@
 
 
       --- 5. MEMORY STATISTICS ---
+      Summary:
       {{ iosxr_memory_summary | default('show memory summary: no output returned') }}
 
-      Per-process memory:
-      {{ iosxr_memory_process_detail | default('show processes memory: no output returned') }}
+      Top 5 processes by memory:
+      {{ iosxr_memory_top5 | default('show processes memory: no output returned') }}
 
 
 
@@ -78,9 +73,6 @@
 
       --- 7. INTERFACE HEALTH ---
       {{ iosxr_int_health_str | default('show interfaces: no output returned') }}
-
-      Controllers:
-      {{ iosxr_int_ctrl_str | default('show controllers: no output returned') }}
 
 
 
@@ -126,7 +118,7 @@
 
 
       --- 12. RECENT LOGS ---
-      {{ iosxr_logs.stdout[0] | default('show logging: no output returned', true) }}
+      {{ iosxr_logs_text | default('show logging: no output returned') }}
 
 
 - name: "REPORT | Write IOS XR health report to control node"

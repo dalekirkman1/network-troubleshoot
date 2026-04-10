@@ -25,6 +25,16 @@
   roles:
     - ios_xe_troubleshoot
 
+
+- name: Cisco IOS-XR Troubleshooting
+  hosts: ios_xr
+  gather_facts: no
+  vars_files:
+    - inventory/production/group_vars/ios_xr.yml
+  roles:
+    - ios_xr_troubleshoot
+
+
 - name: Cisco NX-OS Troubleshooting
   hosts: nxos
   gather_facts: no

@@ -3,16 +3,14 @@
   cisco.iosxr.iosxr_command:
     commands:
       - show interfaces
-      - show controllers
   register: iosxr_interface_health
 
-- name: "DEBUG | Interface health raw"
+- name: "DEBUG | Interface health raw (first 80 lines)"
   ansible.builtin.debug:
-    var: iosxr_interface_health.stdout
+    msg: >-
+      {{ (iosxr_interface_health.stdout[0] | default('show interfaces: no output returned') | regex_replace('\r', '')).split('\n')[0:80] | join('\n') }}
 
 - name: "SET | Interface health string"
   ansible.builtin.set_fact:
     iosxr_int_health_str: >-
       {{ (iosxr_interface_health.stdout[0] | default('show interfaces: no output returned') | regex_replace('\r', '')).split('\n')[0:200] | join('\n') }}
-    iosxr_int_ctrl_str: >-
-      {{ (iosxr_interface_health.stdout[1] | default('show controllers: no output returned') | regex_replace('\r', '')).split('\n')[0:100] | join('\n') }}

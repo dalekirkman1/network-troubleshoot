@@ -1,15 +1,24 @@
 ---
-- name: "8. Transceiver / optics diagnostics"
-  cisco.iosxr.iosxr_command:
-    commands:
-      - show controllers optics
-  register: iosxr_transceiver
+- name: "8. Transceiver / optics diagnostics (virtual XRv platform)"
+  block:
 
-- name: "DEBUG | Transceiver diagnostics raw"
-  ansible.builtin.debug:
-    var: iosxr_transceiver.stdout
+    - name: "RUN | Try transceiver / optics diagnostics"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - show controllers optics
+      register: iosxr_transceiver
+      ignore_errors: yes
 
-- name: "SET | Transceiver diagnostics summary"
-  ansible.builtin.set_fact:
-    iosxr_transceiver_str: >-
-      {{ (iosxr_transceiver.stdout[0] | default('No optics/transceiver information returned.') | regex_replace('\r', '')).split('\n')[0:100] | join('\n') }}
+    - name: "SET | Transceiver diagnostics summary (if command succeeded)"
+      ansible.builtin.set_fact:
+        iosxr_transceiver_str: >-
+          {{ (iosxr_transceiver.stdout[0] | default('No transceiver information returned.') | regex_replace('\r', '')).split('\n')[0:100] | join('\n') }}
+      when:
+        - iosxr_transceiver is defined
+        - iosxr_transceiver.failed is not defined or not iosxr_transceiver.failed
+
+    - name: "SET | Transceiver diagnostics summary (if command unsupported or failed)"
+      ansible.builtin.set_fact:
+        iosxr_transceiver_str: "Transceiver / optics diagnostics are not supported or not applicable on this XRv virtual platform."
+      when:
+        - iosxr_transceiver is not defined or iosxr_transceiver.failed | default(false)

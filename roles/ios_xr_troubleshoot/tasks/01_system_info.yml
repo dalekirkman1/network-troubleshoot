@@ -4,7 +4,7 @@
     commands:
       - show version
       - show inventory
-      - show configuration commit list | last 5
+      - show configuration commit list   # <— no '| last 5'
   register: iosxr_system_info
 
 - name: "DEBUG | System info (raw)"
@@ -24,6 +24,7 @@
       {% endif %}
     iosxr_version: >-
       {% set v = iosxr_system_info.stdout[0] | default('') %}
+      {% set lines = (v | regex_replace('\r', '')).split('\n') %}
       {% set vline = (lines | select('search', 'Cisco IOS XR Software') | list | first | default('')) %}
       {% if vline %}
       {{ vline }}

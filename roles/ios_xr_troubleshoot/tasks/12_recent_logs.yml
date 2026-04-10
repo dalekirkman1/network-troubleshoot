@@ -1,10 +1,22 @@
+# 12_recent_logs.yml
 ---
 - name: "12. Recent logs"
   cisco.iosxr.iosxr_command:
     commands:
       - show logging
   register: iosxr_logs
+  ignore_errors: yes
 
-- name: "DEBUG | Recent logs (first 50 lines)"
-  ansible.builtin.debug:
-    msg: "{{ (iosxr_logs.stdout[0] | regex_replace('\r', '')).split('\n')[0:50] }}"
+- name: "SET | Recent logs text (safe)"
+  ansible.builtin.set_fact:
+    iosxr_logs_text: >-
+      {{ (iosxr_logs.stdout[0] | default('show logging: no output returned') | regex_replace('\r', '')).split('\n')[0:80] | join('\n') }}
+  when:
+    - iosxr_logs is defined
+    - iosxr_logs.failed is not defined or not iosxr_logs.failed
+
+- name: "SET | Recent logs text (fallback)"
+  ansible.builtin.set_fact:
+    iosxr_logs_text: "show logging could not be collected cleanly on this XRv platform."
+  when:
+    - iosxr_logs is not defined or iosxr_logs.failed | default(false)
