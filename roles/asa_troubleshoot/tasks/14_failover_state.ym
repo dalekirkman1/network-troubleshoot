@@ -1,4 +1,24 @@
 ---
+# ============================================================
+# SECTION 14: FAILOVER / HA STATE
+#
+# WHY: ASA failover state is critical in active/standby pairs.
+#      'show failover' confirms which unit is active, whether
+#      the mate is reachable, and whether interface/state sync
+#      is healthy.
+#
+# HOW:
+#   - Runs 'show failover'.
+#   - The raw stdout string is processed in Jinja2:
+#       1. '.splitlines()' converts output into a list.
+#       2. '| map('trim')' strips whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| join('\n')' reassembles the failover status into
+#          a clean block for reporting.
+#
+# Tags: health, ha — run alone with: --tags health,ha
+# ============================================================
+
 - name: "14. Failover / HA state"
   cisco.asa.asa_command:
     commands:
@@ -11,4 +31,6 @@
 
 - name: "SET | Failover summary"
   ansible.builtin.set_fact:
-    asa_failover_summary: "{{ asa_failover.stdout[0] | default('Failover not configured or no output.') | regex_replace('\\r', '') }}"
+    asa_failover_summary: >-
+      {{ (asa_failover.stdout[0] | default('Failover not configured or no output.') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}

@@ -1,4 +1,30 @@
 ---
+# ============================================================
+# SECTION 1: SYSTEM INFO AND INVENTORY
+#
+# WHY: Establishes the device identity before any deeper
+#      troubleshooting. On ASA, 'show version' and
+#      'show inventory' confirm hostname, software release,
+#      platform, licensing context, and serial/asset data.
+#
+# HOW:
+#   - Runs:
+#       * 'show version'
+#       * 'show inventory'
+#   - The raw stdout strings are processed in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map('trim')' strips leading/trailing whitespace
+#          from each line.
+#       3. '| reject('equalto', '')' removes blank lines so
+#          the output is compact in debug/report views.
+#       4. '| list' materialises the filtered generator.
+#       5. Individual lines are then searched to derive safe
+#          facts for hostname, version, and serial.
+#
+# Tags: identity, health — run alone with: --tags identity,health
+# ============================================================
+
 - name: "1. System info and inventory"
   cisco.asa.asa_command:
     commands:
@@ -14,7 +40,7 @@
   ansible.builtin.set_fact:
     asa_hostname: >-
       {% set v = asa_system_info.stdout[0] | default('') %}
-      {% set lines = (v | regex_replace('\\r', '')).split('\n') %}
+      {% set lines = (v | regex_replace('\r', '')).splitlines() | map('trim') | reject('equalto', '') | list %}
       {% set up_line = (lines | select('search', ' up ') | list | first | default('')) %}
       {% if up_line %}
       {{ up_line.split()[0] }}
@@ -23,7 +49,7 @@
       {% endif %}
     asa_version: >-
       {% set v = asa_system_info.stdout[0] | default('') %}
-      {% set first_line = (v | regex_replace('\\r', '')).split('\n')[0] | default('') %}
+      {% set first_line = ((v | regex_replace('\r', '')).splitlines() | map('trim') | reject('equalto', '') | list | first | default('')) %}
       {{ first_line.replace('Cisco Adaptive Security Appliance Software Version ', '') }}
     asa_serial: >-
       {% set inv = asa_system_info.stdout[1] | default('') %}

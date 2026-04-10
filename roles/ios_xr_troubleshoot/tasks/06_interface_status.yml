@@ -1,4 +1,25 @@
 ---
+# ============================================================
+# SECTION 6: INTERFACE STATUS
+#
+# WHY: Brief interface summaries ('show ipv4 interface brief',
+#      'show ipv6 interface brief', 'show interfaces brief')
+#      give a one-line view per interface (state, protocol,
+#      address). This is the fastest way to spot down / admin-
+#      down links and misaddressing on IOS XR.
+#
+# HOW:
+#   - Collects three standard summaries for v4, v6, and overall.
+#   - Each stdout is normalised in Jinja2 by:
+#       1. '.splitlines()' to create a list of lines.
+#       2. '| map(''trim'')' to remove XR's column padding.
+#       3. '| reject(''equalto'', '''')' to drop blank rows.
+#       4. '| join('\n')' so the report shows a clean table
+#          per view rather than a Python list representation.
+#
+# Tags: health, interfaces — run alone with: --tags health,interfaces
+# ============================================================
+
 - name: "6. Interface status"
   cisco.iosxr.iosxr_command:
     commands:

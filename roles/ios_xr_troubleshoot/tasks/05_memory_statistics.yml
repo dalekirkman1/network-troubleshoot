@@ -1,4 +1,27 @@
 ---
+# ============================================================
+# SECTION 5: MEMORY STATISTICS
+#
+# WHY: Memory pressure on IOS XR shows up both in global pools
+#      ('show memory summary') and per-process heaps ('show
+#      processes memory'). Tracking the top 5 consumers helps
+#      you spot leaks or oversized control-plane services.
+#
+# HOW:
+#   - Runs:
+#       * 'show memory summary' for system-wide pool usage.
+#       * 'show processes memory' for per-process consumption.
+#   - For the top 5:
+#       1. '.splitlines()' turns stdout into a list.
+#       2. The header containing 'JID'/'Process' is located.
+#       3. A slice of header + next 5 lines is taken.
+#       4. '| map(''trim'') | reject(''equalto'', '''')' cleans
+#          up padding and blank rows.
+#       5. '| join('\n')' produces a compact top-5 table.
+#
+# Tags: health, memory — run alone with: --tags health,memory
+# ============================================================
+
 - name: "5. Memory statistics"
   cisco.iosxr.iosxr_command:
     commands:

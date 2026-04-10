@@ -1,20 +1,76 @@
 ---
-- name: "13. VPN session and tunnel state"
+# ============================================================
+# SECTION 13: VPN STATE
+#
+# WHY: VPN health is a core ASA troubleshooting area. Active
+#      remote-access or site-to-site sessions may appear healthy
+#      at the interface/routing level while still failing due to
+#      IKE/IPsec negotiation or stale tunnel state. This section
+#      provides a quick summary of current VPN sessions plus the
+#      underlying IKEv2 and IPsec security associations. [web:108][web:116][web:117]
+#
+# HOW:
+#   - Runs:
+#       * 'show vpn-sessiondb summary' for active VPN session
+#         counts and protocol/session summary. [web:108][web:109]
+#       * 'show crypto ikev2 sa' for IKEv2 security association
+#         state. [web:116][web:117]
+#       * 'show crypto ipsec sa' for IPsec SA/counter state,
+#         including packet encryption/decryption statistics. [web:116][web:117]
+#   - Each raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map('trim')' strips leading/trailing whitespace
+#          from each line.
+#       3. '| reject('equalto', '')' removes blank lines so
+#          the output has no large gaps in the terminal.
+#       4. '| list' materialises the filtered generator back
+#          into a concrete list.
+#       5. A slice limits large outputs to a practical summary:
+#          session summary [0:30], IKEv2 [0:60], IPsec [0:80].
+#       6. '| join('\n')' collapses each list into one string
+#          with real newlines, so debug/report rendering shows
+#          readable tables instead of Python list literals.
+#
+# Tags: health, vpn — run alone with: --tags health,vpn
+# ============================================================
+
+- name: "13. VPN state"
   cisco.asa.asa_command:
     commands:
       - show vpn-sessiondb summary
-      - show vpn-sessiondb anyconnect
       - show crypto ikev2 sa
       - show crypto ipsec sa
   register: asa_vpn_state
+  ignore_errors: yes
 
 - name: "DEBUG | VPN state raw"
   ansible.builtin.debug:
     var: asa_vpn_state.stdout
+  when:
+    - asa_vpn_state is defined
+    - asa_vpn_state.failed | default(false) == false
 
-- name: "SET | VPN state summaries"
+- name: "SET | VPN summary strings"
   ansible.builtin.set_fact:
-    asa_vpn_summary: "{{ asa_vpn_state.stdout[0] | default('No VPN sessions summary available.') | regex_replace('\\r', '') }}"
-    asa_anyconnect_summary: "{{ asa_vpn_state.stdout[1] | default('No AnyConnect sessions or not configured.') | regex_replace('\\r', '') }}"
-    asa_ikev2_sa: "{{ asa_vpn_state.stdout[2] | default('No IKEv2 SAs or not configured.') | regex_replace('\\r', '') }}"
-    asa_ipsec_sa: "{{ asa_vpn_state.stdout[3] | default('No IPsec SAs or not configured.') | regex_replace('\\r', '') }}"
+    asa_vpn_session_summary: >-
+      {% if asa_vpn_state is defined and asa_vpn_state.failed | default(false) == false %}
+      {{ (asa_vpn_state.stdout[0] | default('show vpn-sessiondb summary: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | slice(0, 30) | list | join('\n') }}
+      {% else %}
+      VPN session summary not available or command unsupported on this platform.
+      {% endif %}
+    asa_ikev2_sa_summary: >-
+      {% if asa_vpn_state is defined and asa_vpn_state.failed | default(false) == false %}
+      {{ (asa_vpn_state.stdout[1] | default('show crypto ikev2 sa: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | slice(0, 60) | list | join('\n') }}
+      {% else %}
+      IKEv2 security association information not available.
+      {% endif %}
+    asa_ipsec_sa_summary: >-
+      {% if asa_vpn_state is defined and asa_vpn_state.failed | default(false) == false %}
+      {{ (asa_vpn_state.stdout[2] | default('show crypto ipsec sa: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | slice(0, 80) | list | join('\n') }}
+      {% else %}
+      IPsec security association information not available.
+      {% endif %}

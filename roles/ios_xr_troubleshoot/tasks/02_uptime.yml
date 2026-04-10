@@ -1,4 +1,24 @@
 ---
+# ============================================================
+# SECTION 2: DEVICE UPTIME
+#
+# WHY: Uptime and last reload reason are critical context for
+#      any fault. On IOS XR, many subsystems recover after a
+#      reload; knowing whether the node has been up for minutes
+#      or months changes how you read logs and counters.
+#
+# HOW:
+#   - Reuses 'show version' output to extract the single line
+#     containing 'uptime is' via Jinja2.
+#   - The uptime line is derived by:
+#       1. Splitting stdout into lines with '.splitlines()'.
+#       2. Selecting the first line matching 'uptime is'.
+#       3. Trimming whitespace so the report shows a clean,
+#          single-sentence uptime statement.
+#
+# Tags: health — run alone with: --tags health
+# ============================================================
+
 - name: "2. Device uptime"
   cisco.iosxr.iosxr_command:
     commands:

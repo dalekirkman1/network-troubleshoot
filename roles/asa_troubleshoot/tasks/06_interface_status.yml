@@ -1,16 +1,41 @@
 ---
-- name: "6. Interface status and summary"
+# ============================================================
+# SECTION 6: INTERFACE STATUS
+#
+# WHY: Interface state is foundational for ASA troubleshooting.
+#      'show interface ip brief' and interface summaries reveal
+#      admin/down status, addressing, and basic link condition.
+#
+# HOW:
+#   - Runs:
+#       * 'show interface ip brief'
+#       * 'show nameif'
+#   - The raw stdout strings are processed in Jinja2:
+#       1. '.splitlines()' converts output into lists.
+#       2. '| map('trim')' strips whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| join('\n')' produces clean text blocks for the
+#          report rather than Python list literals.
+#
+# Tags: health, interfaces — run alone with: --tags health,interfaces
+# ============================================================
+
+- name: "6. Interface status"
   cisco.asa.asa_command:
     commands:
       - show interface ip brief
-      - show interface summary
+      - show nameif
   register: asa_interface_status
 
 - name: "DEBUG | Interface status raw"
   ansible.builtin.debug:
     var: asa_interface_status.stdout
 
-- name: "SET | Interface brief & summary strings"
+- name: "SET | Interface status strings"
   ansible.builtin.set_fact:
-    asa_int_brief: "{{ asa_interface_status.stdout[0] | default('N/A') | regex_replace('\\r', '') }}"
-    asa_int_summary: "{{ asa_interface_status.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"
+    asa_int_ip_brief: >-
+      {{ (asa_interface_status.stdout[0] | default('show interface ip brief: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}
+    asa_nameif_summary: >-
+      {{ (asa_interface_status.stdout[1] | default('show nameif: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}

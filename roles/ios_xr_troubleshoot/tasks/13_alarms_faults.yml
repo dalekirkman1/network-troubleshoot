@@ -1,0 +1,48 @@
+---
+# ============================================================
+# SECTION 13: ALARMS AND FAULT MANAGER
+#
+# WHY: IOS XR raises platform and service issues as alarms
+#      (minor/major/critical) via the alarm and fault manager.
+#      'show alarms brief' gives a concise view of current
+#      active conditions (card failures, link problems, power
+#      issues) and is a core part of Cisco’s XR health check
+#      workflow before diving into individual subsystems.
+#
+# HOW:
+#   - Runs 'show alarms brief' to list active alarms with
+#     severity and source, which complements the raw syslog
+#     stream collected in the logs section.
+#   - The raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map('trim')' strips leading/trailing whitespace
+#          from each line so columns tighten up.
+#       3. '| reject('equalto', '')' removes blank lines so the
+#          output has no large gaps in the terminal or report.
+#       4. '| list' materialises the filtered generator back
+#          into a concrete list for safe slicing/indexing.
+#       5. A slice '[0:40]' keeps roughly one screen of the
+#          most recent or most important alarms.
+#       6. '| join('\n')' collapses the list into a single
+#          string with real newlines, so debug/rendering shows
+#          a clean table instead of a Python list literal.
+#
+# Tags: health, alarms — run alone with: --tags health,alarms
+# ============================================================
+
+- name: "13. Alarms and fault manager"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show alarms brief
+  register: iosxr_alarms
+  ignore_errors: yes
+
+- name: "SET | Alarm summary"
+  ansible.builtin.set_fact:
+    iosxr_alarms_brief: >-
+      {% if iosxr_alarms is defined and iosxr_alarms.failed | default(false) == false %}
+      {{ (iosxr_alarms.stdout[0] | default('show alarms brief: no output returned') | regex_replace('\r', '')).split('\n')[0:40] | join('\n') }}
+      {% else %}
+      Alarms not available or command unsupported on this platform.
+      {% endif %}

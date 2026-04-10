@@ -1,5 +1,28 @@
 ---
-# 3. PLATFORM HEALTH (ENVIRONMENT / PLATFORM ONLY)
+# ============================================================
+# SECTION 3: PLATFORM HEALTH STATUS
+#
+# WHY: On IOS XR, 'admin show environment all' and 'show platform'
+#      give chassis-level health (power, fan, temperature, card
+#      state). This surfaces systemic hardware issues that are
+#      independent of any one protocol or interface.
+#
+# HOW:
+#   - Collects:
+#       * 'admin show environment all' for sensors and PSU/fan
+#         state in the admin plane.
+#       * 'show platform' for line card and RP status.
+#   - The raw stdout strings are processed in Jinja2:
+#       1. '.splitlines()' converts multi-line output to lists.
+#       2. '| map(''trim'')' removes padding from each line.
+#       3. '| reject(''equalto'', '''')' drops blank lines for
+#          compact tables in debug and the report.
+#       4. '| list' materialises the filtered output.
+#       5. '| join('\n')' rejoins the list into a readable block
+#          instead of a Python list literal.
+#
+# Tags: health — run alone with: --tags health
+# ============================================================
 
 - name: "3. Platform health (environment & platform)"
   cisco.iosxr.iosxr_command:

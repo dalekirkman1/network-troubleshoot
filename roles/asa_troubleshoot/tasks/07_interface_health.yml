@@ -1,10 +1,38 @@
 ---
-- name: 7. Interface health and errors
+# ============================================================
+# SECTION 7: INTERFACE HEALTH AND ERRORS
+#
+# WHY: Full interface output on ASA exposes line state, packet
+#      counters, CRC/input/output errors, MTU, duplex, and
+#      drops. This section focuses on link quality rather than
+#      simple interface up/down state.
+#
+# HOW:
+#   - Runs 'show interface' for detailed interface statistics.
+#   - The raw stdout string is processed in Jinja2:
+#       1. '.splitlines()' converts the output into a list.
+#       2. '| map('trim')' strips padding and indentation.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| list' materialises the generator for slicing.
+#       5. A slice '[0:200]' keeps a practical subset of the
+#          full interface health output.
+#       6. '| join('\n')' renders it cleanly in the report.
+#
+# Tags: health, interfaces — run alone with: --tags health,interfaces
+# ============================================================
+
+- name: "7. Interface health and errors"
   cisco.asa.asa_command:
     commands:
       - show interface
   register: asa_interface_health
-  
-- name: Debug interface health
-  debug:
+
+- name: "DEBUG | Interface health raw"
+  ansible.builtin.debug:
     var: asa_interface_health.stdout
+
+- name: "SET | Interface health string"
+  ansible.builtin.set_fact:
+    asa_int_health_str: >-
+      {{ (asa_interface_health.stdout[0] | default('show interface: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | slice(0, 200) | list | join('\n') }}

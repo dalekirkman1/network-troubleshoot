@@ -1,6 +1,25 @@
 ---
 # ============================================================
-# REPORT — ASSEMBLE AND WRITE IOS XR HEALTH REPORT
+# SECTION 99: REPORT ASSEMBLY AND WRITE-OUT
+#
+# WHY: Gathers all previously collected IOS XR health data and
+#      writes a single, timestamped text report per device on
+#      the Ansible control node. This provides a durable,
+#      offline artefact you can attach to tickets or compare
+#      between runs.
+#
+# HOW:
+#   - Creates a local reports directory (default ./reports/iosxr/)
+#     on the control node.
+#   - Uses 'set_fact' to build a large Jinja2 multi-line string
+#     (iosxr_report_content) composed of all section outputs.
+#   - The report uses safe defaults ('| default(...)') for every
+#     section so missing or failed commands don't break report
+#     generation.
+#   - 'copy' with 'delegate_to: localhost' writes the report to
+#     the control node with a hostname + timestamped filename.
+#
+# Tags: report — run alone with: --tags report
 # ============================================================
 
 - name: "REPORT | Set timestamp and report directory for IOS XR report"
@@ -77,7 +96,7 @@
 
 
       --- 8. TRANSCEIVER / OPTICS DIAGNOSTICS ---
-      {{ iosxr_transceiver_str | default('Optics diagnostics not available') }}
+      {{ iosxr_transceiver_str | default('Transceiver / optics diagnostics not available') }}
 
 
 
@@ -119,6 +138,27 @@
 
       --- 12. RECENT LOGS ---
       {{ iosxr_logs_text | default('show logging: no output returned') }}
+
+
+
+      --- 13. ALARMS AND FAULTS ---
+      {{ iosxr_alarms_brief | default('Alarms not available or command unsupported on this platform.') }}
+
+
+
+      --- 14. CONTROL-PLANE / LPTS POLICERS ---
+      {{ iosxr_lpts_summary | default('LPTS punt policer statistics are not available or not applicable on this XRv platform.') }}
+
+
+
+      --- 15. QOS / POLICY-MAP (Gi0/0/0/0) ---
+      {{ iosxr_qos_summary | default('QoS / policy-map information not available or not applied on GigabitEthernet0/0/0/0.') }}
+
+
+
+      --- 16. BUNDLE / LACP STATUS ---
+      {{ iosxr_bundle_summary | default('No bundle interfaces or LACP status available on this platform.') }}
+
 
 
 - name: "REPORT | Write IOS XR health report to control node"

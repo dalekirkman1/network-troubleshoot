@@ -1,4 +1,35 @@
 ---
+# ============================================================
+# SECTION 7: INTERFACE HEALTH AND ERRORS
+#
+# WHY: While brief interface commands show admin/oper state,
+#      the full 'show interfaces' output on IOS XR exposes
+#      detailed error counters, flaps, duplex/MTU mismatches,
+#      and per-interface statistics. This section focuses on
+#      link-quality issues rather than simple up/down status.
+#
+# HOW:
+#   - Runs 'show interfaces' to capture detailed per-interface
+#     health information recommended in IOS XR troubleshooting
+#     guides for packet loss and link error analysis.
+#   - The raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map('trim')' strips leading/trailing whitespace
+#          from each line (XR often pads columns with spaces).
+#       3. '| reject('equalto', '')' removes blank lines so the
+#          output has no large gaps in the terminal or report.
+#       4. '| list' materialises the filtered generator back
+#          into a concrete list for slicing.
+#       5. A slice '[0:200]' keeps roughly the first 200 lines
+#          as a practical summary on large systems.
+#       6. '| join('\n')' collapses the list into one string
+#          with real newlines, so debug and the report render
+#          a clean table instead of a Python list literal.
+#
+# Tags: health, interfaces — run alone with: --tags health,interfaces
+# ============================================================
+
 - name: "7. Interface health and errors"
   cisco.iosxr.iosxr_command:
     commands:

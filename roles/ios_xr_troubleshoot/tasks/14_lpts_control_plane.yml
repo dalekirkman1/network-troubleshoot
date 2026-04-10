@@ -1,0 +1,54 @@
+---
+# ============================================================
+# SECTION 14: CONTROL-PLANE / LPTS POLICERS
+#
+# WHY: IOS XR uses LPTS (Local Packet Transport Services) to
+#      police traffic destined to the control-plane (RP/LC).
+#      Over-aggressive LPTS policers can drop SSH, BGP, OSPF,
+#      or other critical packets before they reach processes,
+#      so checking punt policer stats is key for control-plane
+#      connectivity issues.
+#
+# HOW:
+#   - Attempts 'show lpts pifib hardware police location
+#     0/0/CPU0', a common reference command to inspect punt
+#     policers on XR platforms.
+#   - Because XRv in CML may not support full LPTS hardware
+#     views, the command is run with 'ignore_errors: yes' and
+#     a clear fallback message is set if it fails.
+#   - When the command succeeds, stdout is processed in Jinja2:
+#       1. '.splitlines()' converts the multi-line string to a
+#          list of lines.
+#       2. '| map('trim')' removes padding around each line.
+#       3. '| reject('equalto', '')' strips empty lines.
+#       4. '| list' materialises the generator for slicing.
+#       5. A slice '[0:80]' keeps roughly 1–2 screens of the
+#          most relevant policer entries.
+#       6. '| join('\n')' returns a readable block for debug
+#          and report inclusion.
+#
+# Tags: health, control-plane — run alone with: --tags health,control-plane
+# ============================================================
+
+- name: "14. LPTS / control-plane policers"
+  block:
+    - name: "RUN | Try LPTS punt policer stats"
+      cisco.iosxr.iosxr_command:
+        commands:
+          - show lpts pifib hardware police location 0/0/CPU0
+      register: iosxr_lpts
+      ignore_errors: yes
+
+    - name: "SET | LPTS policer summary (if available)"
+      ansible.builtin.set_fact:
+        iosxr_lpts_summary: >-
+          {{ (iosxr_lpts.stdout[0] | default('show lpts pifib hardware police: no output returned') | regex_replace('\r', '')).split('\n')[0:60] | join('\n') }}
+      when:
+        - iosxr_lpts is defined
+        - iosxr_lpts.failed | default(false) == false
+
+    - name: "SET | LPTS policer summary (fallback)"
+      ansible.builtin.set_fact:
+        iosxr_lpts_summary: "LPTS punt policer statistics are not available or not applicable on this XRv platform."
+      when:
+        - iosxr_lpts is not defined or iosxr_lpts.failed | default(false)

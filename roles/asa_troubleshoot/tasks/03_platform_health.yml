@@ -1,4 +1,27 @@
 ---
+# ============================================================
+# SECTION 3: PLATFORM HEALTH STATUS
+#
+# WHY: On ASA, 'show cpu usage' and 'show memory' provide a
+#      quick platform-level resource view. This section is for
+#      overall appliance health rather than per-process detail.
+#
+# HOW:
+#   - Runs:
+#       * 'show cpu usage'
+#       * 'show memory'
+#   - The raw stdout strings are processed in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list.
+#       2. '| map('trim')' removes leading/trailing whitespace.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| list' materialises the filtered generator.
+#       5. '| join('\n')' reassembles the list into a readable
+#          block for debug/report consumption.
+#
+# Tags: health — run alone with: --tags health
+# ============================================================
+
 - name: "3. Platform health (CPU & memory)"
   cisco.asa.asa_command:
     commands:
@@ -12,5 +35,9 @@
 
 - name: "SET | CPU and memory summary facts"
   ansible.builtin.set_fact:
-    asa_cpu_usage_summary: "{{ asa_platform_health.stdout[0] | default('N/A') }}"
-    asa_memory_summary: "{{ asa_platform_health.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"
+    asa_cpu_usage_summary: >-
+      {{ (asa_platform_health.stdout[0] | default('N/A') | regex_replace('\r', '')).splitlines()
+         | map('trim') | reject('equalto', '') | list | join('\n') }}
+    asa_memory_summary: >-
+      {{ (asa_platform_health.stdout[1] | default('N/A') | regex_replace('\r', '')).splitlines()
+         | map('trim') | reject('equalto', '') | list | join('\n') }}

@@ -1,4 +1,27 @@
 ---
+# ============================================================
+# SECTION 10: ROUTING STATE
+#
+# WHY: Routing convergence and neighbor health are at the core
+#      of IOS XR troubleshooting. Route table size, OSPF
+#      adjacency, and BGP session state quickly reveal whether
+#      control-plane protocols are healthy.
+#
+# HOW:
+#   - Runs:
+#       * 'show route summary' for RIB size/status.
+#       * 'show ospf neighbor' for IGP adjacency state.
+#       * 'show bgp summary' for BGP session status.
+#   - Each block is passed through:
+#       1. '.splitlines()' for line-by-line processing.
+#       2. '| map(''trim'') | reject(''equalto'', '''')' to
+#          clean padding/blank lines.
+#       3. '| join('\n')' to embed concise routing tables in
+#          the final report.
+#
+# Tags: routing — run alone with: --tags routing
+# ============================================================
+
 - name: "10. Routing protocol state"
   cisco.iosxr.iosxr_command:
     commands:

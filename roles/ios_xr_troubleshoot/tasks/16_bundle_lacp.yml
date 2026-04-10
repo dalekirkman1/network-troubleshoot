@@ -1,0 +1,45 @@
+---
+# ============================================================
+# SECTION 16: BUNDLE / LACP STATUS
+#
+# WHY: Port-channels (bundles) and LACP state are common
+#      sources of partial connectivity and throughput issues.
+#      On IOS XR, 'show bundle brief' provides a summary of
+#      bundle interfaces, member links, and their operational
+#      state, which is important for access/aggregation nodes.
+#
+# HOW:
+#   - Runs 'show bundle brief' to list all configured bundles
+#     and their member links.
+#   - The raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts the output into a list.
+#       2. '| map('trim')' removes leading/trailing spaces to
+#          tighten up columns.
+#       3. '| reject('equalto', '')' strips blank lines.
+#       4. '| list' materialises the filtered generator, making
+#          it safe to slice.
+#       5. A slice '[0:40]' keeps the listing focused on the
+#          most relevant bundles on lab-sized systems.
+#       6. '| join('\n')' returns a readable table instead of
+#          a Python list literal.
+#   - If bundles are not used on the platform, the fallback
+#     text clearly states that no bundle/LACP data is present.
+#
+# Tags: interfaces, bundles — run alone with: --tags interfaces,bundles
+# ============================================================
+
+- name: "16. Bundle / LACP status"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show bundle brief
+  register: iosxr_bundle
+  ignore_errors: yes
+
+- name: "SET | Bundle / LACP summary"
+  ansible.builtin.set_fact:
+    iosxr_bundle_summary: >-
+      {% if iosxr_bundle is defined and iosxr_bundle.failed | default(false) == false %}
+      {{ (iosxr_bundle.stdout[0] | default('show bundle brief: no output returned') | regex_replace('\r', '')).split('\n')[0:40] | join('\n') }}
+      {% else %}
+      No bundle interfaces or LACP status available on this platform.
+      {% endif %}

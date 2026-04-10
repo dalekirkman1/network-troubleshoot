@@ -1,4 +1,27 @@
 ---
+# ============================================================
+# SECTION 8: TRANSCEIVER / OPTICS DIAGNOSTICS
+#
+# WHY: On physical IOS XR platforms, optics (SFP/QSFP) health
+#      is critical for link flaps and performance issues. XRv
+#      in CML has no real optics, so this section reports a
+#      stub message unless a valid optics command succeeds.
+#
+# HOW:
+#   - Attempts 'show controllers optics' where supported,
+#     with 'ignore_errors: yes' to avoid failing on XRv.
+#   - When the command works, stdout is trimmed and truncated
+#     via:
+#       1. '.splitlines()' to a list.
+#       2. '| map(''trim'') | reject(''equalto'', '''')' to
+#          remove padding and blank lines.
+#       3. '| join('\n')' to produce a compact 1–2 screen view.
+#   - When unsupported, a clear stub fact explains that optics
+#     diagnostics are not applicable on XRv.
+#
+# Tags: health, optics — run alone with: --tags health,optics
+# ============================================================
+
 - name: "8. Transceiver / optics diagnostics (virtual XRv platform)"
   block:
 

@@ -13,4 +13,8 @@
 - ansible.builtin.import_tasks: 10_routing_state.yml
 - ansible.builtin.import_tasks: 11_flow_state.yml
 - ansible.builtin.import_tasks: 12_recent_logs.yml
+- ansible.builtin.import_tasks: 13_alarms_faults.yml
+- ansible.builtin.import_tasks: 14_lpts_control_plane.yml
+- ansible.builtin.import_tasks: 15_qos_policy.yml
+- ansible.builtin.import_tasks: 16_bundle_lacp.yml
 - ansible.builtin.import_tasks: 99_write_report.yml

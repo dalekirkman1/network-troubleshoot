@@ -1,4 +1,25 @@
 ---
+# ============================================================
+# SECTION 9: TOPOLOGY (ARP / NDP / LLDP)
+#
+# WHY: Neighbor tables (ARP, IPv6 NDP, LLDP) give the live L2/L3
+#      adjacency view. On IOS XR they are essential for verifying
+#      reachability, duplicate addresses, or cabling mistakes.
+#
+# HOW:
+#   - Runs:
+#       * 'show arp'
+#       * 'show ipv6 neighbors'
+#       * 'show lldp neighbors'
+#   - Each output is normalised in Jinja2:
+#       1. '.splitlines()' to list form.
+#       2. '| map(''trim'')' to strip padding.
+#       3. '| reject(''equalto'', '''')' to drop empty lines.
+#       4. '| join('\n')' for a clean table per command.
+#
+# Tags: topology, neighbors — run alone with: --tags topology
+# ============================================================
+
 - name: "9. Topology and neighbor data"
   cisco.iosxr.iosxr_command:
     commands:

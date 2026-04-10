@@ -1,4 +1,32 @@
 ---
+# ============================================================
+# SECTION 1: SYSTEM INFO AND INVENTORY
+#
+# WHY: Provides chassis identity (hostname, software version,
+#      platform type, serial/asset info) and recent commit
+#      history. On IOS XR this is the foundation for all other
+#      troubleshooting: you verify what you are actually logged
+#      into before interpreting any counters or logs.
+#
+# HOW:
+#   - Uses 'show version' and 'show inventory' to capture core
+#     system details recommended in IOS XR health check guides.
+#   - The raw stdout is post-processed in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map(''trim'')' strips padding that XR often adds
+#          at line starts/ends.
+#       3. '| reject(''equalto'', '''')' removes empty lines so
+#          you get a tight, readable table instead of gaps.
+#       4. '| list' materialises the filtered generator into a
+#          concrete list for further indexing.
+#       5. '| join('\n')' folds the list back into a string so
+#          debug and the report render real newlines instead of
+#          Python list literals like [''line1'', ''line2''].
+#
+# Tags: identity, health — run alone with: --tags identity,health
+# ============================================================
+
 - name: "1. System info and inventory"
   cisco.iosxr.iosxr_command:
     commands:

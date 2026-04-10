@@ -1,4 +1,29 @@
 ---
+# ============================================================
+# SECTION 11: FLOW, NAT, AND CONNECTION STATE
+#
+# WHY: ASA is a stateful firewall, so connection table, xlate
+#      count, local-host state, and NAT detail are core to
+#      troubleshooting dataplane issues. These outputs help
+#      distinguish routing problems from state/NAT exhaustion
+#      or translation mistakes.
+#
+# HOW:
+#   - Runs:
+#       * 'show conn count'
+#       * 'show xlate count'
+#       * 'show local-host'
+#       * 'show nat detail'
+#   - The raw stdout strings are processed in Jinja2:
+#       1. '.splitlines()' converts output into lists.
+#       2. '| map('trim')' strips whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| list' materialises the filtered generator.
+#       5. '| join('\n')' returns clean multi-line blocks.
+#
+# Tags: health, flow, nat — run alone with: --tags health,flow,nat
+# ============================================================
+
 - name: "11. Flow, NAT, and connection state"
   cisco.asa.asa_command:
     commands:
@@ -14,7 +39,15 @@
 
 - name: "SET | Flow / NAT summary strings"
   ansible.builtin.set_fact:
-    asa_conn_count: "{{ asa_flow_state.stdout[0] | default('N/A') | regex_replace('\\r', '') }}"
-    asa_xlate_count: "{{ asa_flow_state.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"
-    asa_local_host_summary: "{{ asa_flow_state.stdout[2] | default('N/A') | regex_replace('\\r', '') }}"
-    asa_nat_detail: "{{ asa_flow_state.stdout[3] | default('N/A') | regex_replace('\\r', '') }}"
+    asa_conn_count: >-
+      {{ (asa_flow_state.stdout[0] | default('N/A') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}
+    asa_xlate_count: >-
+      {{ (asa_flow_state.stdout[1] | default('N/A') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}
+    asa_local_host_summary: >-
+      {{ (asa_flow_state.stdout[2] | default('N/A') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}
+    asa_nat_detail: >-
+      {{ (asa_flow_state.stdout[3] | default('N/A') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}

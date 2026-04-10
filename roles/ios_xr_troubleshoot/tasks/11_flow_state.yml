@@ -1,4 +1,37 @@
 ---
+# ============================================================
+# SECTION 11: FLOW / FORWARDING STATE
+#
+# WHY: Traffic and forwarding counters on IOS XR ('show ipv4
+#      traffic', 'show ipv6 traffic', 'show cef summary') give
+#      a control-plane agnostic view of how packets traverse
+#      the router. They are essential for spotting drops,
+#      punted traffic, and CEF table issues that may not be
+#      obvious from protocol state alone.
+#
+# HOW:
+#   - Runs:
+#       * 'show ipv4 traffic' for global IPv4 packet counters.
+#       * 'show ipv6 traffic' for IPv6 counters.
+#       * 'show cef summary' for FIB/CEF usage and status.
+#   - Each raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts the multi-line string into
+#          a Python list, one element per line.
+#       2. '| map('trim')' strips leading/trailing whitespace
+#          from each line (XR pads many tables with spaces).
+#       3. '| reject('equalto', '')' removes blank lines so the
+#          output has no large gaps in the terminal or report.
+#       4. '| list' materialises the filtered generator back
+#          into a concrete list for slicing.
+#       5. A slice '[0:80]' keeps roughly the first 80 lines
+#          as a practical summary on lab and PE routers.
+#       6. '| join('\n')' collapses the list into one string
+#          with real newlines, so debug prints tables instead
+#          of Python list literals like ['line1','line2'].
+#
+# Tags: health, forwarding — run alone with: --tags health,forwarding
+# ============================================================
+
 - name: "11. Flow and forwarding state"
   cisco.iosxr.iosxr_command:
     commands:

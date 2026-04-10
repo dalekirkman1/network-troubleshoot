@@ -1,4 +1,25 @@
 ---
+# ============================================================
+# SECTION 4: CPU TOP PROCESSES
+#
+# WHY: 'show processes cpu' on IOS XR exposes RP CPU load per
+#      process. Focusing on the top 5 entries lets you quickly
+#      identify runaway daemons or control-plane pressure
+#      without dumping the full process list.
+#
+# HOW:
+#   - Runs 'show processes cpu' and parses in Jinja2:
+#       1. '.splitlines()' converts stdout into a list of lines.
+#       2. The header line containing 'PID' and 'Process' is
+#          located and its index captured.
+#       3. A slice of header + next 5 lines is taken to show
+#          just the top 5 CPU consumers.
+#       4. '| join('\n')' reassembles that slice into a compact
+#          table for inclusion in the report.
+#
+# Tags: health, cpu — run alone with: --tags health,cpu
+# ============================================================
+
 - name: "4. CPU top processes"
   cisco.iosxr.iosxr_command:
     commands:

@@ -1,4 +1,22 @@
 ---
+# ============================================================
+# SECTION 10: DYNAMIC ROUTING NEIGHBORS
+#
+# WHY: If dynamic routing is enabled on the ASA, neighbor state
+#      is essential for diagnosing reachability and failover of
+#      routed paths. OSPF is a common case in ASA labs.
+#
+# HOW:
+#   - Runs 'show ospf neighbor'.
+#   - The raw stdout string is processed in Jinja2:
+#       1. '.splitlines()' converts output into a list.
+#       2. '| map('trim')' strips whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| join('\n')' returns a compact neighbor summary.
+#
+# Tags: routing — run alone with: --tags routing
+# ============================================================
+
 - name: "10. Dynamic routing neighbors"
   cisco.asa.asa_command:
     commands:
@@ -11,4 +29,6 @@
 
 - name: "SET | OSPF neighbor summary"
   ansible.builtin.set_fact:
-    asa_ospf_neighbors: "{{ asa_routing.stdout[0] | default('No OSPF neighbors or not configured.') | regex_replace('\\r', '') }}"
+    asa_ospf_neighbors: >-
+      {{ (asa_routing.stdout[0] | default('No OSPF neighbors or not configured.') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}

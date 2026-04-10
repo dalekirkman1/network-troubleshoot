@@ -1,5 +1,26 @@
-# 12_recent_logs.yml
 ---
+# ============================================================
+# SECTION 12: RECENT LOGS
+#
+# WHY: 'show logging' on IOS XR surfaces system and protocol
+#      events that explain counters and state changes. A truncated
+#      buffer in the report gives context (reloads, flaps, auth
+#      failures) without overwhelming the reader.
+#
+# HOW:
+#   - Runs 'show logging' with 'ignore_errors: yes' to cope with
+#     paging quirks on XRv.
+#   - The first N lines are extracted via:
+#       1. '.splitlines()' to a list.
+#       2. '| map(''trim'') | reject(''equalto'', '''')' to remove
+#          padding and empty lines.
+#       3. A slice '[0:80]' keeps roughly 1–2 screens of logs.
+#       4. '| join('\n')' returns a readable block for debug and
+#          the report.
+#
+# Tags: logs — run alone with: --tags logs
+# ============================================================
+
 - name: "12. Recent logs"
   cisco.iosxr.iosxr_command:
     commands:

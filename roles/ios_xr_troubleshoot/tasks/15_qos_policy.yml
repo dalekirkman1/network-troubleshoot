@@ -1,0 +1,46 @@
+---
+# ============================================================
+# SECTION 15: QOS / POLICY-MAP (Gi0/0/0/0)
+#
+# WHY: QoS policies can shape, police, or drop traffic before
+#      it ever hits higher-layer protocols. On IOS XR, 'show
+#      policy-map interface' reveals which service-policies
+#      are attached and how many packets/bytes have matched
+#      each class, which is vital for throughput and latency
+#      troubleshooting.
+#
+# HOW:
+#   - Runs 'show policy-map interface GigabitEthernet0/0/0/0'
+#     as a representative access/edge interface in the lab.
+#     (You can parameterise the interface later via a variable
+#     such as 'iosxr_qos_interface'.)
+#   - The raw stdout string is processed entirely in Jinja2:
+#       1. '.splitlines()' converts it into a list of lines.
+#       2. '| map('trim')' removes column padding and indent.
+#       3. '| reject('equalto', '')' drops empty lines.
+#       4. '| list' materialises the filtered output.
+#       5. A slice '[0:80]' shows roughly 1–2 screens of QoS
+#          classes and counters.
+#       6. '| join('\n')' yields a clean, multi-line block for
+#          debug and report inclusion.
+#   - If the command is unsupported or no policy is attached,
+#     a fallback message explains that QoS data is unavailable.
+#
+# Tags: qos — run alone with: --tags qos
+# ============================================================
+
+- name: "15. QoS / policy-map on key interfaces"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show policy-map interface GigabitEthernet0/0/0/0
+  register: iosxr_qos
+  ignore_errors: yes
+
+- name: "SET | QoS / policy-map summary"
+  ansible.builtin.set_fact:
+    iosxr_qos_summary: >-
+      {% if iosxr_qos is defined and iosxr_qos.failed | default(false) == false %}
+      {{ (iosxr_qos.stdout[0] | default('show policy-map interface: no output returned') | regex_replace('\r', '')).split('\n')[0:80] | join('\n') }}
+      {% else %}
+      QoS / policy-map information not available or not applied on GigabitEthernet0/0/0/0.
+      {% endif %}

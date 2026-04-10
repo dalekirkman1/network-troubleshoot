@@ -1,5 +1,25 @@
 ---
-- name: "2. Device uptime (reuse show version)"
+# ============================================================
+# SECTION 2: DEVICE UPTIME
+#
+# WHY: Uptime gives immediate context for every other symptom.
+#      On ASA, a recent reboot can explain empty counters,
+#      short log buffers, or protocol reconvergence events.
+#
+# HOW:
+#   - Reuses 'show version' output to derive the line that
+#     contains uptime information.
+#   - The raw stdout string is processed in Jinja2:
+#       1. '.splitlines()' converts it into a list.
+#       2. '| map('trim')' removes whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. A matching line containing ' up ' is selected and
+#          stored as a clean uptime summary.
+#
+# Tags: health — run alone with: --tags health
+# ============================================================
+
+- name: "2. Device uptime"
   cisco.asa.asa_command:
     commands:
       - show version
@@ -9,23 +29,14 @@
   ansible.builtin.debug:
     var: asa_uptime.stdout
 
-- name: "SET | Parsed uptime and reload reason (safe)"
+- name: "SET | Parsed uptime line"
   ansible.builtin.set_fact:
     asa_uptime_line: >-
       {% set v = asa_uptime.stdout[0] | default('') %}
-      {% set lines = (v | regex_replace('\\r', '')).split('\n') %}
-      {% set up_line = (lines | select('search', ' up ') | list | first | default('')) %}
-      {% if up_line %}
-      {{ up_line.strip() }}
+      {% set lines = (v | regex_replace('\r', '')).splitlines() | map('trim') | reject('equalto', '') | list %}
+      {% set uline = (lines | select('search', ' up ') | list | first | default('')) %}
+      {% if uline %}
+      {{ uline }}
       {% else %}
       Uptime: see full show version output
-      {% endif %}
-    asa_reload_reason: >-
-      {% set v = asa_uptime.stdout[0] | default('') %}
-      {% set lines = (v | regex_replace('\\r', '')).split('\n') %}
-      {% set reason_line = (lines | select('search', 'Reason:') | list | first | default('')) %}
-      {% if reason_line %}
-      {{ reason_line.split('Reason:')[-1].strip() }}
-      {% else %}
-      N/A
       {% endif %}

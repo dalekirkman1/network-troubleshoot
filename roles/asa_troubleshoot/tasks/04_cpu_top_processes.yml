@@ -1,4 +1,26 @@
 ---
+# ============================================================
+# SECTION 4: CPU TOP PROCESSES
+#
+# WHY: 'show processes cpu-usage non-zero sorted' identifies
+#      the processes actively consuming ASA CPU. This is more
+#      specific than Section 3 because it isolates individual
+#      CPU consumers instead of showing overall platform load.
+#
+# HOW:
+#   - Runs 'show processes cpu-usage non-zero sorted'.
+#   - The raw stdout string is processed in Jinja2:
+#       1. '.splitlines()' converts the output to a list.
+#       2. '| map('trim')' strips whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| list' materialises the filtered generator.
+#       5. A slice '[0:20]' keeps a concise top section of the
+#          sorted CPU table for readability.
+#       6. '| join('\n')' renders it as a table in the report.
+#
+# Tags: health, cpu — run alone with: --tags health,cpu
+# ============================================================
+
 - name: "4. CPU top processes"
   cisco.asa.asa_command:
     commands:
@@ -12,4 +34,5 @@
 - name: "SET | CPU top processes string (first 20 lines)"
   ansible.builtin.set_fact:
     asa_cpu_top_str: >-
-      {{ (asa_cpu_top.stdout[0] | regex_replace('\\r', '')).split('\n')[0:20] | join('\n') }}
+      {{ (asa_cpu_top.stdout[0] | default('show processes cpu-usage non-zero sorted: no output returned') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | slice(0, 20) | list | join('\n') }}

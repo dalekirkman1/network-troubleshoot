@@ -1,44 +1,81 @@
 ---
 # ============================================================
-# REPORT — ASSEMBLE AND WRITE ASA HEALTH REPORT
+# SECTION 99: REPORT ASSEMBLY AND WRITE-OUT
+#
+# WHY: Gathers all previously collected ASA health data and
+#      writes a single, timestamped text report per device on
+#      the Ansible control node. This gives you a durable,
+#      offline artefact for troubleshooting, change review,
+#      or ticket attachment.
+#
+# HOW:
+#   - Creates a local reports directory (default ./reports/asa/)
+#     on the control node.
+#   - Uses 'set_fact' to build a large Jinja2 multi-line string
+#     (asa_report_content) from all previously collected facts.
+#   - Every report section uses '| default(...)' so the report
+#     still renders even if a command was skipped, unsupported,
+#     or returned no output.
+#   - Uses 'copy' with 'delegate_to: localhost' to write a
+#     timestamped report file per ASA device.
+#
+# Tags: report — run alone with: --tags report
 # ============================================================
 
 - name: "REPORT | Set timestamp and report directory for ASA report"
   ansible.builtin.set_fact:
     report_ts: "{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}"
-    report_dir: "{{ report_dir | default('./reports/asa/') }}"
+    report_dir_asa: "{{ report_dir_asa | default('./reports/asa/') }}"
   delegate_to: localhost
+  tags: report
 
 - name: "REPORT | Ensure local ASA report directory exists"
   ansible.builtin.file:
-    path: "{{ report_dir }}"
+    path: "{{ report_dir_asa }}"
     state: directory
     mode: "0755"
   delegate_to: localhost
+  tags: report
 
 - name: "REPORT | Build ASA health report content"
   ansible.builtin.set_fact:
     asa_report_content: |
       =======================================================
-      HEALTH REPORT: {{ asa_hostname | default(inventory_hostname) }}
+      ASA HEALTH REPORT: {{ asa_hostname | default(inventory_hostname) }}
       DATE: {{ report_ts }}
       =======================================================
 
 
 
       --- 1. SYSTEM INFO ---
+      Hostname:
+      {{ asa_hostname | default(inventory_hostname) }}
+
+      Version:
+      {{ asa_version | default('Version not parsed from show version') }}
+
+      Serial:
+      {{ asa_serial | default('Serial not parsed from show inventory') }}
+
+      Full show version:
       {{ asa_system_info.stdout[0] | default('show version: no output returned', true) }}
+
+      Full show inventory:
+      {{ asa_system_info.stdout[1] | default('show inventory: no output returned', true) }}
 
 
 
       --- 2. DEVICE UPTIME ---
       {{ asa_uptime_line | default('Uptime: see full show version output') }}
-      Last reload reason: {{ asa_reload_reason | default('N/A') }}
 
 
 
-      --- 3. PLATFORM HEALTH STATUS ---
-      {{ asa_cpu_usage_summary | default('CPU usage summary not available') }}
+      --- 3. PLATFORM HEALTH ---
+      CPU usage:
+      {{ asa_cpu_usage_summary | default('show cpu usage: no output returned') }}
+
+      Memory summary:
+      {{ asa_memory_summary | default('show memory: no output returned') }}
 
 
 
@@ -48,24 +85,34 @@
 
 
       --- 5. MEMORY STATISTICS ---
-      {{ asa_memory_summary | default('Memory statistics not available') }}
+      Summary:
+      {{ asa_memory_summary | default('show memory: no output returned') }}
+
+      Top memory processes:
+      {{ asa_memory_top_str | default('show processes memory sorted: no output returned') }}
 
 
 
       --- 6. INTERFACE STATUS ---
-      {{ asa_int_brief | default('show interface ip brief: no output returned') }}
+      Interface IP brief:
+      {{ asa_int_ip_brief | default('show interface ip brief: no output returned') }}
 
-      Interface summary:
-      {{ asa_int_summary | default('show interface summary: no output returned') }}
-
-
-
-      --- 7. TRANSCEIVER / INTERFACE DIAGNOSTICS ---
-      {{ asa_transceiver_str | default('Transceiver / interface diagnostics not available') }}
+      Nameif summary:
+      {{ asa_nameif_summary | default('show nameif: no output returned') }}
 
 
 
-      --- 8. TOPOLOGY (ARP & ROUTE) ---
+      --- 7. INTERFACE HEALTH ---
+      {{ asa_int_health_str | default('show interface: no output returned') }}
+
+
+
+      --- 8. TRANSCEIVER / INTERFACE DIAGNOSTICS ---
+      {{ asa_transceiver_str | default('Interface diagnostics not available') }}
+
+
+
+      --- 9. TOPOLOGY (ARP / ROUTING SNAPSHOT) ---
       ARP table:
       {{ asa_arp_table | default('show arp: no output returned') }}
 
@@ -74,12 +121,12 @@
 
 
 
-      --- 9. OSPF NEIGHBORS ---
-      {{ asa_ospf_neighbors | default('No OSPF neighbors found or OSPF not configured.') }}
+      --- 10. DYNAMIC ROUTING NEIGHBORS ---
+      {{ asa_ospf_neighbors | default('No OSPF neighbors or not configured.') }}
 
 
 
-      --- 10. FLOW / NAT STATE ---
+      --- 11. FLOW / NAT / CONNECTION STATE ---
       Connection count:
       {{ asa_conn_count | default('show conn count: no output returned') }}
 
@@ -94,36 +141,37 @@
 
 
 
-      --- 11. RECENT LOGS ---
-      {{ asa_logs.stdout[0] | default('show logging: no output returned', true) }}
+      --- 12. RECENT LOGS ---
+      {{ asa_logs_text | default('show logging: no output returned') }}
 
 
 
       --- 13. VPN STATE ---
-      VPN summary:
-      {{ asa_vpn_summary | default('No VPN sessions summary collected.') }}
+      VPN session summary:
+      {{ asa_vpn_session_summary | default('VPN session summary not available.') }}
 
-      AnyConnect sessions:
-      {{ asa_anyconnect_summary | default('No AnyConnect sessions or not configured.') }}
+      IKEv2 security associations:
+      {{ asa_ikev2_sa_summary | default('IKEv2 security association information not available.') }}
 
-      IKEv2 SAs:
-      {{ asa_ikev2_sa | default('No IKEv2 SAs or not configured.') }}
-
-      IPsec SAs:
-      {{ asa_ipsec_sa | default('No IPsec SAs or not configured.') }}
+      IPsec security associations:
+      {{ asa_ipsec_sa_summary | default('IPsec security association information not available.') }}
 
 
 
       --- 14. FAILOVER / HA STATE ---
-      {{ asa_failover_summary | default('Failover not configured or no output collected.') }}
+      {{ asa_failover_summary | default('Failover not configured or failover state not collected.') }}
 
-- name: "REPORT | Write assembled ASA health report to control node"
+  tags: report
+
+- name: "REPORT | Write ASA health report to control node"
   ansible.builtin.copy:
     content: "{{ asa_report_content }}"
-    dest: "{{ report_dir }}{{ asa_hostname | default(inventory_hostname) }}_asa_health_report_{{ report_ts }}.txt"
+    dest: "{{ report_dir_asa }}{{ asa_hostname | default(inventory_hostname) }}_asa_health_report_{{ report_ts }}.txt"
     mode: "0644"
   delegate_to: localhost
+  tags: report
 
 - name: "REPORT | Confirm ASA health report file path to console"
   ansible.builtin.debug:
-    msg: "ASA health report saved → {{ report_dir }}{{ asa_hostname | default(inventory_hostname) }}_asa_health_report_{{ report_ts }}.txt"
+    msg: "ASA health report saved → {{ report_dir_asa }}{{ asa_hostname | default(inventory_hostname) }}_asa_health_report_{{ report_ts }}.txt"
+  tags: report

@@ -1,4 +1,24 @@
 ---
+# ============================================================
+# SECTION 9: TOPOLOGY (ARP / ROUTING SNAPSHOT)
+#
+# WHY: ASA is primarily a firewall, so topology is usually best
+#      inferred from ARP and route state. These outputs confirm
+#      next-hop resolution and basic forwarding knowledge.
+#
+# HOW:
+#   - Runs:
+#       * 'show arp'
+#       * 'show route'
+#   - The raw stdout strings are processed in Jinja2:
+#       1. '.splitlines()' converts output into lists.
+#       2. '| map('trim')' strips whitespace padding.
+#       3. '| reject('equalto', '')' removes blank lines.
+#       4. '| join('\n')' produces clean report sections.
+#
+# Tags: topology, routing — run alone with: --tags topology,routing
+# ============================================================
+
 - name: "9. ARP table and routing snapshot"
   cisco.asa.asa_command:
     commands:
@@ -12,5 +32,9 @@
 
 - name: "SET | ARP and route summary"
   ansible.builtin.set_fact:
-    asa_arp_table: "{{ asa_topology.stdout[0] | default('N/A') | regex_replace('\\r', '') }}"
-    asa_route_table: "{{ asa_topology.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"
+    asa_arp_table: >-
+      {{ (asa_topology.stdout[0] | default('N/A') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}
+    asa_route_table: >-
+      {{ (asa_topology.stdout[1] | default('N/A') | regex_replace('\r', ''))
+         .splitlines() | map('trim') | reject('equalto', '') | list | join('\n') }}
