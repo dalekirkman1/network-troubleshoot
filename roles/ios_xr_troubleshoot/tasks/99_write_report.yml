@@ -9,7 +9,7 @@
 #      between runs.
 #
 # HOW:
-#   - Creates a local reports directory (default ./reports/iosxr/)
+#   - Creates a local reports directory (default ./reports/ios_xr/)
 #     on the control node.
 #   - Uses 'set_fact' to build a large Jinja2 multi-line string
 #     (iosxr_report_content) composed of all section outputs.
@@ -25,15 +25,17 @@
 - name: "REPORT | Set timestamp and report directory for IOS XR report"
   ansible.builtin.set_fact:
     report_ts: "{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}"
-    report_dir_iosxr: "{{ report_dir_iosxr | default('./reports/iosxr/') }}"
+    report_dir_ios_xr: "{{ report_dir_ios_xr | default('./reports/ios_xr/') }}"
   delegate_to: localhost
+  tags: report
 
 - name: "REPORT | Ensure local IOS XR report directory exists"
   ansible.builtin.file:
-    path: "{{ report_dir_iosxr }}"
+    path: "{{ report_dir_ios_xr }}"
     state: directory
     mode: "0755"
   delegate_to: localhost
+  tags: report
 
 - name: "REPORT | Build IOS XR health report content"
   ansible.builtin.set_fact:
@@ -159,15 +161,17 @@
       --- 16. BUNDLE / LACP STATUS ---
       {{ iosxr_bundle_summary | default('No bundle interfaces or LACP status available on this platform.') }}
 
-
+  tags: report
 
 - name: "REPORT | Write IOS XR health report to control node"
   ansible.builtin.copy:
     content: "{{ iosxr_report_content }}"
-    dest: "{{ report_dir_iosxr }}{{ iosxr_hostname | default(inventory_hostname) }}_iosxr_health_report_{{ report_ts }}.txt"
+    dest: "{{ report_dir_ios_xr }}{{ iosxr_hostname | default(inventory_hostname) }}_iosxr_health_report_{{ report_ts }}.txt"
     mode: "0644"
   delegate_to: localhost
+  tags: report
 
 - name: "REPORT | Confirm IOS XR health report file path to console"
   ansible.builtin.debug:
-    msg: "IOS XR health report saved → {{ report_dir_iosxr }}{{ iosxr_hostname | default(inventory_hostname) }}_iosxr_health_report_{{ report_ts }}.txt"
+    msg: "IOS XR health report saved → {{ report_dir_ios_xr }}{{ iosxr_hostname | default(inventory_hostname) }}_iosxr_health_report_{{ report_ts }}.txt"
+  tags: report

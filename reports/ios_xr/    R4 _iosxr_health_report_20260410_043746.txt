@@ -1,6 +1,6 @@
 =======================================================
 IOS XR HEALTH REPORT:     R4 
-DATE: 20260410_043309
+DATE: 20260410_043746
 =======================================================
 
 
@@ -19,12 +19,12 @@ Build Information:
  Label        : 25.1.1
 
 cisco IOS-XRv 9000 () processor
-System uptime is 1 hour 17 minutes
+System uptime is 1 hour 22 minutes
 
 
 
 --- 2. DEVICE UPTIME ---
-    System uptime is 1 hour 17 minutes 
+    System uptime is 1 hour 22 minutes 
 
 
 
@@ -50,14 +50,14 @@ Summary:
 node:      node0_RP0_CPU0
 ------------------------------------------------------------------
 
- Physical Memory: 6144M total (3181M available)
- Application Memory : 6144M (3181M available)
+ Physical Memory: 6144M total (3180M available)
+ Application Memory : 6144M (3180M available)
  Image: 4M (bootram: 0M)
  Reserved: 0M, IOMem: 0M, flashfsys: 0M
  Total shared window: 233.888M
 
 Top 5 processes by memory:
-   JID      Text(KB)   Data(KB)  Stack(KB) Dynamic(KB) Process                       \n------ ---------- ---------- ---------- ----------- ------------------------------\n1257         1792     177732        132       71002 rib_mgr                       \n252           312      58284        132       28817 parser_server                 \n1285         4456      51916        132       22347 l2vpn_mgr                     \n1269         3896      42468        132       20934 pim6                          
+   JID      Text(KB)   Data(KB)  Stack(KB) Dynamic(KB) Process                       \n------ ---------- ---------- ---------- ----------- ------------------------------\n1257         1792     177732        132       71002 rib_mgr                       \n252           312      58392        132       28917 parser_server                 \n1285         4456      51916        132       22347 l2vpn_mgr                     \n1269         3896      42468        132       20934 pim6                          
 
 
 
@@ -81,7 +81,7 @@ Null0 is up, line protocol is up
   MTU 1500 bytes, BW 0 Kbit
      reliability 255/255, txload Unknown, rxload Unknown
   Encapsulation Null,  loopback not set,
-  Last link flapped 01:16:17
+  Last link flapped 01:20:55
   Last input never, output never
   Last clearing of "show interface" counters never
   5 minute input rate 0 bits/sec, 0 packets/sec
@@ -126,18 +126,18 @@ GigabitEthernet0/0/0/0 is up, line protocol is up
   Duplex unknown, 1000Mb/s, link type is force-up
   output flow control is off, input flow control is off
   loopback not set,
-  Last link flapped 01:00:00
+  Last link flapped 01:04:38
   ARP type ARPA, ARP timeout 04:00:00
   Last input 00:00:00, output 00:00:00
   Last clearing of "show interface" counters never
-  5 minute input rate 0 bits/sec, 1 packets/sec
-  5 minute output rate 0 bits/sec, 0 packets/sec
-     5539 packets input, 398936 bytes, 263 total input drops
+  5 minute input rate 1000 bits/sec, 2 packets/sec
+  5 minute output rate 6000 bits/sec, 1 packets/sec
+     6241 packets input, 447687 bytes, 281 total input drops
      0 drops for unrecognized upper-level protocol
      Received 1 broadcast packets, 0 multicast packets
               0 runts, 0 giants, 0 throttles, 0 parity
      0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
-     2944 packets output, 1847402 bytes, 0 total output drops
+     3428 packets output, 2173769 bytes, 0 total output drops
      Output 1 broadcast packets, 0 multicast packets
      0 output errors, 0 underruns, 0 applique, 0 resets
      0 output buffer failures, 0 output buffers swapped out
@@ -152,7 +152,7 @@ Transceiver / optics diagnostics are not supported or not applicable on this XRv
 
 --- 9. TOPOLOGY (ARP / NDP / LLDP) ---
 ARP:
--------------------------------------------------------------------------------0/0/CPU0-------------------------------------------------------------------------------Address         Age        Hardware Addr   State      Type  Interface172.16.12.21    00:59:40   5254.000c.380e  Dynamic    ARPA  GigabitEthernet0/0/0/0172.16.12.104   -          5254.00ff.a428  Interface  ARPA  GigabitEthernet0/0/0/0
+-------------------------------------------------------------------------------0/0/CPU0-------------------------------------------------------------------------------Address         Age        Hardware Addr   State      Type  Interface172.16.12.21    01:04:18   5254.000c.380e  Dynamic    ARPA  GigabitEthernet0/0/0/0172.16.12.104   -          5254.00ff.a428  Interface  ARPA  GigabitEthernet0/0/0/0
 
 IPv6 neighbors:
 
@@ -176,10 +176,10 @@ BGP summary:
 
 --- 11. FLOW / FORWARDING STATE ---
 IPv4 traffic:
-IP statistics:  Rcvd:  3333 total, 3333 local destination         0 format errors, 0 bad hop count         0 unknown protocol, 0 not a gateway         0 security failures, 0 bad source, 0 bad header         0 with options, 0 bad, 0 unknown  Opts:  0 end, 0 nop, 0 basic security, 0 extended security         0 strict source rt, 0 loose source rt, 0 record rt         0 stream ID, 0 timestamp, 0 alert, 0 cipso  Frags: 0 reassembled, 0 timeouts, 0 couldn't reassemble, 0 fragments received         0 fragmented, 0 fragment count, 0 fragment max drop  Bcast: 0 sent, 0 received  Mcast: 0 sent, 0 received   Lisp: 0 encapped in v4, 0 decapped from v4         0 encapped in v6, 0 decapped from v6         0 encap errors, 0 decap errors   Drop: 0 encapsulation failed, 0 no route, 0 too big   Sent: 2904 totalICMP statistics:  Sent: 0 admin unreachable, 0 network unreachable        0 host unreachable, 0 protocol unreachable        0 port unreachable, 0 fragment unreachable        0 time to live exceeded, 0 reassembly ttl exceeded        0 echo request, 0 echo reply        0 mask request, 0 mask reply        0 parameter error, 0 redirects        0 total  Rcvd: 0 admin unreachable, 0 network unreachable        0 host unreachable, 0 protocol unreachable        0 port unreachable, 0 fragment unreachable        0 time to live exceeded, 0 reassembly ttl exceeded        0 echo request, 0 echo reply        0 mask request, 0 mask reply        0 redirect, 0 parameter error        0 source quench, 0 timestamp, 0 timestamp reply        0 router advertisement, 0 router solicitation        0 total, 0 checksum errors, 0 unknownUDP statistics:        0 packets input, 0 packets output        0 checksum errors, 0 no port        0 forwarded broadcastsTCP statistics:        3336 packets input, 2907 packets output        0 checksum errors, 0 no port
+IP statistics:  Rcvd:  3831 total, 3831 local destination         0 format errors, 0 bad hop count         0 unknown protocol, 0 not a gateway         0 security failures, 0 bad source, 0 bad header         0 with options, 0 bad, 0 unknown  Opts:  0 end, 0 nop, 0 basic security, 0 extended security         0 strict source rt, 0 loose source rt, 0 record rt         0 stream ID, 0 timestamp, 0 alert, 0 cipso  Frags: 0 reassembled, 0 timeouts, 0 couldn't reassemble, 0 fragments received         0 fragmented, 0 fragment count, 0 fragment max drop  Bcast: 0 sent, 0 received  Mcast: 0 sent, 0 received   Lisp: 0 encapped in v4, 0 decapped from v4         0 encapped in v6, 0 decapped from v6         0 encap errors, 0 decap errors   Drop: 0 encapsulation failed, 0 no route, 0 too big   Sent: 3338 totalICMP statistics:  Sent: 0 admin unreachable, 0 network unreachable        0 host unreachable, 0 protocol unreachable        0 port unreachable, 0 fragment unreachable        0 time to live exceeded, 0 reassembly ttl exceeded        0 echo request, 0 echo reply        0 mask request, 0 mask reply        0 parameter error, 0 redirects        0 total  Rcvd: 0 admin unreachable, 0 network unreachable        0 host unreachable, 0 protocol unreachable        0 port unreachable, 0 fragment unreachable        0 time to live exceeded, 0 reassembly ttl exceeded        0 echo request, 0 echo reply        0 mask request, 0 mask reply        0 redirect, 0 parameter error        0 source quench, 0 timestamp, 0 timestamp reply        0 router advertisement, 0 router solicitation        0 total, 0 checksum errors, 0 unknownUDP statistics:        0 packets input, 0 packets output        0 checksum errors, 0 no port        0 forwarded broadcastsTCP statistics:        3834 packets input, 3341 packets output        0 checksum errors, 0 no port
 
 IPv6 traffic:
-IPv6 statistics:  Rcvd:  12 total, 0 local destination         0 source-routed, 0 truncated         0 format errors, 0 hop count exceeded         0 bad header, 0 unknown option, 0 bad source         0 unknown protocol         0 fragments, 0 total reassembled         0 reassembly timeouts, 0 reassembly failures         0 reassembly max drop         0 overlap fragments drop  Sent:  22 generated, 0 forwarded         0 fragmented into 0 fragments, 0 failed         0 no route, 0 too big  Mcast: 2 received, 0 sent   Lisp: 0 encapped in v4, 0 decapped from v4         0 encapped in v6, 0 decapped from v6         0 encap errors, 0 decap errors  Miscellaneous drops: 0  IO puntback: 0ICMP statistics:  Rcvd: 0 input, 0 checksum errors, 0 too short        0 unknown error type        unreach: 0 routing, 0 admin, 0 neighbor,                  0 address, 0 port, 0 unknown        parameter: 0 error, 0 header, 0 option,                   0 unknown        0 hopcount expired, 0 reassembly timeout,        0 unknown timeout, 0 too big,        0 echo request, 0 echo reply  Sent: 0 output, 0 rate-limited        unreach: 0 routing, 0 admin, 0 neighbor,                  0 address, 0 port, 0 unknown        parameter: 0 error, 0 header, 0 option                   0 unknown        0 hopcount expired, 0 reassembly timeout,        0 unknown timeout, 0 too big,        0 echo request, 0 echo replyNeighbor Discovery ICMP statistics:  Rcvd: 0 router solicit, 0 router advert, 0 redirect        0 neighbor solicit, 0 neighbor advert  Sent: 0 router solicit, 0 router advert, 0 redirect        0 neighbor solicit, 0 neighbor advertUDP statistics:        0 packets input, 0 checksum errors        0 length errors, 0 no port, 0 dropped        0 packets outputTCP statistics:        0 packets input, 0 checksum errors, 0 dropped        0 packets output, 0 retransmitted
+IPv6 statistics:  Rcvd:  13 total, 0 local destination         0 source-routed, 0 truncated         0 format errors, 0 hop count exceeded         0 bad header, 0 unknown option, 0 bad source         0 unknown protocol         0 fragments, 0 total reassembled         0 reassembly timeouts, 0 reassembly failures         0 reassembly max drop         0 overlap fragments drop  Sent:  23 generated, 0 forwarded         0 fragmented into 0 fragments, 0 failed         0 no route, 0 too big  Mcast: 3 received, 0 sent   Lisp: 0 encapped in v4, 0 decapped from v4         0 encapped in v6, 0 decapped from v6         0 encap errors, 0 decap errors  Miscellaneous drops: 0  IO puntback: 0ICMP statistics:  Rcvd: 0 input, 0 checksum errors, 0 too short        0 unknown error type        unreach: 0 routing, 0 admin, 0 neighbor,                  0 address, 0 port, 0 unknown        parameter: 0 error, 0 header, 0 option,                   0 unknown        0 hopcount expired, 0 reassembly timeout,        0 unknown timeout, 0 too big,        0 echo request, 0 echo reply  Sent: 0 output, 0 rate-limited        unreach: 0 routing, 0 admin, 0 neighbor,                  0 address, 0 port, 0 unknown        parameter: 0 error, 0 header, 0 option                   0 unknown        0 hopcount expired, 0 reassembly timeout,        0 unknown timeout, 0 too big,        0 echo request, 0 echo replyNeighbor Discovery ICMP statistics:  Rcvd: 0 router solicit, 0 router advert, 0 redirect        0 neighbor solicit, 0 neighbor advert  Sent: 0 router solicit, 0 router advert, 0 redirect        0 neighbor solicit, 0 neighbor advertUDP statistics:        0 packets input, 0 checksum errors        0 length errors, 0 no port, 0 dropped        0 packets outputTCP statistics:        0 packets input, 0 checksum errors, 0 dropped        0 packets output, 0 retransmitted
 
 CEF summary:
 Router ID is 0.0.0.0IP CEF with switching (Table Version 0) for node0_RP0_CPU0  Load balancing: L4  Tableid 0xe0000000 (0xdc96f00), Vrfid 0x60000000, Vrid 0x20000000, Flags 0x1019  Vrfname default, Refcount 26  10 routes, 0 protected, 0 reresolve, 0 unresolved (0 old, 0 new), 1360 bytes    3 rib, 0 lsd, 0 aib, 1 internal, 2 interface, 4 special, 1 default routes    Prefix masklen distribution:         unicast: 2 /32, 1 /24, 1 /0       broadcast: 4 /32      multicast: 1 /24, 1 /4   10 load sharing elements, 4960 bytes, 10 references  Shared load sharing elements with 496 bytes, 1 references, including:    1 Pathlist elements, 0 recursive, 0 platform shared, 0 in retry    1 Loadinfo elements, 0 recursive, 0 platform shared  Exclusive load sharing elements with 4464 bytes, 9 references, including:    9 Pathlist elements, 1 recursive, 0 platform shared, 0 in retry    9 Loadinfo elements, 1 recursive, 0 platform shared  0 Drop Pathlist elements  0 route delete cache elements  4 local route bufs received, 0 remote route bufs received,  0 mix bufs received  3 local routes, 0 remote routes  4 total local route updates processed  0 total remote route updates processed   0 pkts pre-routed to cust card  0 pkts pre-routed to rp card  0 pkts received from core card  0 CEF route update drops, 1 revisions of existing leaves  0 CEF route update drops due to version mis-match  Resolution Timer: 15s  0 prefixes modified in place  0 deleted stale prefixes  0 prefixes with label imposition, 0 prefixes with label information  0 LISP EID prefixes, 0 merged, via 0 rlocs  1 next hop     0 incomplete next hops  0 PD backwalks on LDIs with backup path  UDP source port MSB: 0  UDP destination port: 0
@@ -228,8 +228,8 @@ MSDP-cfg-peer        medium   23           238             200        100   200 
 MSDP-default         low      24           239             100        50    100            Static       0             0             01234567  
 SNMP                 low      25           240             300        150   300            Static       0             0             01234567  
 NTP-default          high     26           241             200        100   200            Static       0             0             01234567  
-SSH-known            medium   27           242             300        150   300            Static       102           0             01234567  
-SSH-default          low      28           243             200        100   200            Static       578           0             01234567  
+SSH-known            medium   27           242             300        150   300            Static       117           0             01234567  
+SSH-default          low      28           243             200        100   200            Static       648           0             01234567  
 HTTP-known           medium   29           244             400        200   400            Static       0             0             01234567  
 HTTP-default         low      30           245             200        100   200            Static       0             0             01234567  
 TELNET-known         medium   31           246             200        100   200            Static       0             0             01234567  
