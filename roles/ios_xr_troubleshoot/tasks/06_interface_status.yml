@@ -1,0 +1,18 @@
+---
+- name: "6. Interface status"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show ipv4 interface brief
+      - show ipv6 interface brief
+      - show interfaces brief
+  register: iosxr_interface_status
+
+- name: "DEBUG | Interface status raw"
+  ansible.builtin.debug:
+    var: iosxr_interface_status.stdout
+
+- name: "SET | Interface status strings"
+  ansible.builtin.set_fact:
+    iosxr_int_ipv4_brief: "{{ iosxr_interface_status.stdout[0] | default('show ipv4 interface brief: no output returned') | regex_replace('\r', '') }}"
+    iosxr_int_ipv6_brief: "{{ iosxr_interface_status.stdout[1] | default('show ipv6 interface brief: no output returned') | regex_replace('\r', '') }}"
+    iosxr_int_brief_all: "{{ iosxr_interface_status.stdout[2] | default('show interfaces brief: no output returned') | regex_replace('\r', '') }}"

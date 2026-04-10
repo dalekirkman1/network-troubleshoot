@@ -1,0 +1,39 @@
+---
+- name: "1. System info and inventory"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show version
+      - show inventory
+      - show configuration commit list | last 5
+  register: iosxr_system_info
+
+- name: "DEBUG | System info (raw)"
+  ansible.builtin.debug:
+    var: iosxr_system_info.stdout
+
+- name: "SET | Parsed system info facts (safe)"
+  ansible.builtin.set_fact:
+    iosxr_hostname: >-
+      {% set v = iosxr_system_info.stdout[0] | default('') %}
+      {% set lines = (v | regex_replace('\r', '')).split('\n') %}
+      {% set hline = (lines | select('search', '^Hostname:') | list | first | default('')) %}
+      {% if hline %}
+      {{ hline.split()[1] }}
+      {% else %}
+      {{ inventory_hostname }}
+      {% endif %}
+    iosxr_version: >-
+      {% set v = iosxr_system_info.stdout[0] | default('') %}
+      {% set vline = (lines | select('search', 'Cisco IOS XR Software') | list | first | default('')) %}
+      {% if vline %}
+      {{ vline }}
+      {% else %}
+      {{ v | regex_search('Version\\s+([^ ,]+)', '\\1') | default('UNKNOWN') }}
+      {% endif %}
+    iosxr_serial: >-
+      {% set inv = iosxr_system_info.stdout[1] | default('') %}
+      {% if 'SN:' in inv %}
+      {{ inv.split('SN:')[-1].strip().split()[0] }}
+      {% else %}
+      UNKNOWN
+      {% endif %}

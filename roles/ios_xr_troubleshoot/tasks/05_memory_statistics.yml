@@ -1,0 +1,16 @@
+---
+- name: "5. Memory statistics"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show memory summary
+      - show processes memory
+  register: iosxr_memory_stats
+
+- name: "DEBUG | Memory stats raw"
+  ansible.builtin.debug:
+    var: iosxr_memory_stats.stdout
+
+- name: "SET | Memory statistics summaries"
+  ansible.builtin.set_fact:
+    iosxr_memory_summary: "{{ iosxr_memory_stats.stdout[0] | default('show memory summary: no output returned') | regex_replace('\r', '') }}"
+    iosxr_memory_process_detail: "{{ iosxr_memory_stats.stdout[1] | default('show processes memory: no output returned') | regex_replace('\r', '') }}"

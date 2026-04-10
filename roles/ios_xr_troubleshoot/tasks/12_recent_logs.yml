@@ -1,0 +1,10 @@
+---
+- name: "12. Recent logs"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show logging
+  register: iosxr_logs
+
+- name: "DEBUG | Recent logs (first 50 lines)"
+  ansible.builtin.debug:
+    msg: "{{ (iosxr_logs.stdout[0] | regex_replace('\r', '')).split('\n')[0:50] }}"

@@ -1,0 +1,18 @@
+---
+- name: "9. Topology and neighbor data"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show arp
+      - show ipv6 neighbors
+      - show lldp neighbors
+  register: iosxr_topology
+
+- name: "DEBUG | Topology raw"
+  ansible.builtin.debug:
+    var: iosxr_topology.stdout
+
+- name: "SET | Topology summary"
+  ansible.builtin.set_fact:
+    iosxr_arp_table: "{{ iosxr_topology.stdout[0] | default('show arp: no output returned') | regex_replace('\r', '') }}"
+    iosxr_nd_table: "{{ iosxr_topology.stdout[1] | default('show ipv6 neighbors: no output returned') | regex_replace('\r', '') }}"
+    iosxr_lldp_neighbors: "{{ iosxr_topology.stdout[2] | default('show lldp neighbors: no output returned') | regex_replace('\r', '') }}"

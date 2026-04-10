@@ -1,0 +1,22 @@
+---
+- name: "2. Device uptime"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show version
+  register: iosxr_uptime
+
+- name: "DEBUG | Uptime raw"
+  ansible.builtin.debug:
+    var: iosxr_uptime.stdout
+
+- name: "SET | Parsed uptime line"
+  ansible.builtin.set_fact:
+    iosxr_uptime_line: >-
+      {% set v = iosxr_uptime.stdout[0] | default('') %}
+      {% set lines = (v | regex_replace('\r', '')).split('\n') %}
+      {% set uline = (lines | select('search', 'uptime is') | list | first | default('')) %}
+      {% if uline %}
+      {{ uline.strip() }}
+      {% else %}
+      Uptime: see full show version output
+      {% endif %}

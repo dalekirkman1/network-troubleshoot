@@ -1,0 +1,15 @@
+---
+- name: "8. Transceiver / optics diagnostics"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show controllers optics
+  register: iosxr_transceiver
+
+- name: "DEBUG | Transceiver diagnostics raw"
+  ansible.builtin.debug:
+    var: iosxr_transceiver.stdout
+
+- name: "SET | Transceiver diagnostics summary"
+  ansible.builtin.set_fact:
+    iosxr_transceiver_str: >-
+      {{ (iosxr_transceiver.stdout[0] | default('No optics/transceiver information returned.') | regex_replace('\r', '')).split('\n')[0:100] | join('\n') }}

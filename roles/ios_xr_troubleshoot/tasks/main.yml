@@ -1,11 +1,6 @@
 ---
-# ============================================================
-# ROLE TASK ENTRY POINT
-# Imports each section task file in order.
-# import_tasks is used (not include_tasks) so that tags
-# defined in each file are inherited at the play level,
-# enabling --tags filtering to work correctly.
-# ============================================================
+# IOS XR troubleshooting role entry point
+
 - ansible.builtin.import_tasks: 01_system_info.yml
 - ansible.builtin.import_tasks: 02_uptime.yml
 - ansible.builtin.import_tasks: 03_platform_health.yml
@@ -16,6 +11,6 @@
 - ansible.builtin.import_tasks: 08_transceiver_equivalent.yml
 - ansible.builtin.import_tasks: 09_topology.yml
 - ansible.builtin.import_tasks: 10_routing_state.yml
-- ansible.builtin.import_tasks: 11_flow_nat_state.yml
+- ansible.builtin.import_tasks: 11_flow_state.yml
 - ansible.builtin.import_tasks: 12_recent_logs.yml
 - ansible.builtin.import_tasks: 99_write_report.yml

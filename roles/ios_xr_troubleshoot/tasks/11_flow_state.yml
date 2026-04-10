@@ -1,0 +1,18 @@
+---
+- name: "11. Flow and forwarding state"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show ipv4 traffic
+      - show ipv6 traffic
+      - show cef summary
+  register: iosxr_flow
+
+- name: "DEBUG | Flow state raw"
+  ansible.builtin.debug:
+    var: iosxr_flow.stdout
+
+- name: "SET | Flow / forwarding summaries"
+  ansible.builtin.set_fact:
+    iosxr_ipv4_traffic: "{{ iosxr_flow.stdout[0] | default('show ipv4 traffic: no output returned') | regex_replace('\r', '') }}"
+    iosxr_ipv6_traffic: "{{ iosxr_flow.stdout[1] | default('show ipv6 traffic: no output returned') | regex_replace('\r', '') }}"
+    iosxr_cef_summary: "{{ iosxr_flow.stdout[2] | default('show cef summary: no output returned') | regex_replace('\r', '') }}"

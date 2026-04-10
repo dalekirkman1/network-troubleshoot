@@ -1,0 +1,21 @@
+---
+# ============================================================
+# GROUP VARS — IOS-XR GROUP ONLY
+# ansible_network_os moved here from all.yml so it only
+# applies to R1, R2, R3 and does not leak to other groups.
+# ============================================================
+ansible_network_os: cisco.iosxr.iosxr
+ansible_connection: network_cli
+
+#SSH connection parameters
+ansible_user: "{{ vault_ios_xr_user }}"
+ansible_password: "{{ vault_ios_xr_password }}"
+ansible_ssh_common_args: "-o PreferredAuthentications=password -o PubkeyAuthentication=no"
+
+# Privilege escalation parameters
+ansible_become: true
+ansible_become_method: enable
+ansible_become_password: "{{ vault_ios_xr_enable_password }}"
+
+standard_mtu: "1500"
+report_dir: "./reports/ios_xr/"

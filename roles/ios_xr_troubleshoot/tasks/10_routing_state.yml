@@ -1,0 +1,18 @@
+---
+- name: "10. Routing protocol state"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show route summary
+      - show ospf neighbor
+      - show bgp summary
+  register: iosxr_routing
+
+- name: "DEBUG | Routing state raw"
+  ansible.builtin.debug:
+    var: iosxr_routing.stdout
+
+- name: "SET | Routing protocol summaries"
+  ansible.builtin.set_fact:
+    iosxr_route_summary: "{{ iosxr_routing.stdout[0] | default('show route summary: no output returned') | regex_replace('\r', '') }}"
+    iosxr_ospf_neighbors: "{{ iosxr_routing.stdout[1] | default('show ospf neighbor: no output returned') | regex_replace('\r', '') }}"
+    iosxr_bgp_summary: "{{ iosxr_routing.stdout[2] | default('show bgp summary: no output returned') | regex_replace('\r', '') }}"

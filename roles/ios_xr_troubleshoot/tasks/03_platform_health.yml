@@ -1,0 +1,20 @@
+---
+- name: "3. Platform health (environment, processes)"
+  cisco.iosxr.iosxr_command:
+    commands:
+      - show processes cpu
+      - show processes memory
+      - admin show environment all
+      - show platform
+  register: iosxr_platform_health
+
+- name: "DEBUG | Platform health raw"
+  ansible.builtin.debug:
+    var: iosxr_platform_health.stdout
+
+- name: "SET | Platform health summaries"
+  ansible.builtin.set_fact:
+    iosxr_cpu_overview: "{{ iosxr_platform_health.stdout[0] | default('CPU process summary not available.') | regex_replace('\r', '') }}"
+    iosxr_memory_overview: "{{ iosxr_platform_health.stdout[1] | default('Memory summary not available.') | regex_replace('\r', '') }}"
+    iosxr_env_overview: "{{ iosxr_platform_health.stdout[2] | default('Environment information not available.') | regex_replace('\r', '') }}"
+    iosxr_platform_overview: "{{ iosxr_platform_health.stdout[3] | default('show platform: no output returned') | regex_replace('\r', '') }}"

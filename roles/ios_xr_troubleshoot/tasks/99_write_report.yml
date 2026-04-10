@@ -1,0 +1,141 @@
+---
+# ============================================================
+# REPORT — ASSEMBLE AND WRITE IOS XR HEALTH REPORT
+# ============================================================
+
+- name: "REPORT | Set timestamp and report directory for IOS XR report"
+  ansible.builtin.set_fact:
+    report_ts: "{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}"
+    report_dir_iosxr: "{{ report_dir_iosxr | default('./reports/iosxr/') }}"
+  delegate_to: localhost
+
+- name: "REPORT | Ensure local IOS XR report directory exists"
+  ansible.builtin.file:
+    path: "{{ report_dir_iosxr }}"
+    state: directory
+    mode: "0755"
+  delegate_to: localhost
+
+- name: "REPORT | Build IOS XR health report content"
+  ansible.builtin.set_fact:
+    iosxr_report_content: |
+      =======================================================
+      IOS XR HEALTH REPORT: {{ iosxr_hostname | default(inventory_hostname) }}
+      DATE: {{ report_ts }}
+      =======================================================
+
+
+
+      --- 1. SYSTEM INFO ---
+      {{ iosxr_system_info.stdout[0] | default('show version: no output returned', true) }}
+
+
+
+      --- 2. DEVICE UPTIME ---
+      {{ iosxr_uptime_line | default('Uptime: see full show version output') }}
+
+
+
+      --- 3. PLATFORM HEALTH (CPU / MEMORY / ENV / PLATFORM) ---
+      CPU:
+      {{ iosxr_cpu_overview | default('CPU summary not available') }}
+
+      Memory:
+      {{ iosxr_memory_overview | default('Memory summary not available') }}
+
+      Environment:
+      {{ iosxr_env_overview | default('Environment summary not available') }}
+
+      Platform:
+      {{ iosxr_platform_overview | default('Platform overview not available') }}
+
+
+
+      --- 4. CPU TOP PROCESSES ---
+      {{ iosxr_cpu_top_str | default('Top CPU processes not available') }}
+
+
+
+      --- 5. MEMORY STATISTICS ---
+      {{ iosxr_memory_summary | default('show memory summary: no output returned') }}
+
+      Per-process memory:
+      {{ iosxr_memory_process_detail | default('show processes memory: no output returned') }}
+
+
+
+      --- 6. INTERFACE STATUS ---
+      IPv4 brief:
+      {{ iosxr_int_ipv4_brief | default('show ipv4 interface brief: no output returned') }}
+
+      IPv6 brief:
+      {{ iosxr_int_ipv6_brief | default('show ipv6 interface brief: no output returned') }}
+
+      Interface brief:
+      {{ iosxr_int_brief_all | default('show interfaces brief: no output returned') }}
+
+
+
+      --- 7. INTERFACE HEALTH ---
+      {{ iosxr_int_health_str | default('show interfaces: no output returned') }}
+
+      Controllers:
+      {{ iosxr_int_ctrl_str | default('show controllers: no output returned') }}
+
+
+
+      --- 8. TRANSCEIVER / OPTICS DIAGNOSTICS ---
+      {{ iosxr_transceiver_str | default('Optics diagnostics not available') }}
+
+
+
+      --- 9. TOPOLOGY (ARP / NDP / LLDP) ---
+      ARP:
+      {{ iosxr_arp_table | default('show arp: no output returned') }}
+
+      IPv6 neighbors:
+      {{ iosxr_nd_table | default('show ipv6 neighbors: no output returned') }}
+
+      LLDP neighbors:
+      {{ iosxr_lldp_neighbors | default('show lldp neighbors: no output returned') }}
+
+
+
+      --- 10. ROUTING STATE ---
+      Route summary:
+      {{ iosxr_route_summary | default('show route summary: no output returned') }}
+
+      OSPF neighbors:
+      {{ iosxr_ospf_neighbors | default('show ospf neighbor: no output returned') }}
+
+      BGP summary:
+      {{ iosxr_bgp_summary | default('show bgp summary: no output returned') }}
+
+
+
+      --- 11. FLOW / FORWARDING STATE ---
+      IPv4 traffic:
+      {{ iosxr_ipv4_traffic | default('show ipv4 traffic: no output returned') }}
+
+      IPv6 traffic:
+      {{ iosxr_ipv6_traffic | default('show ipv6 traffic: no output returned') }}
+
+      CEF summary:
+      {{ iosxr_cef_summary | default('show cef summary: no output returned') }}
+
+
+
+      --- 12. RECENT LOGS ---
+      {{ iosxr_logs.stdout[0] | default('show logging: no output returned', true) }}
+
+
+- name: "REPORT | Write IOS XR health report to control node"
+  ansible.builtin.copy:
+    content: "{{ iosxr_report_content }}"
+    dest: "{{ report_dir_iosxr }}{{ iosxr_hostname | default(inventory_hostname) }}_iosxr_health_report_{{ report_ts }}.txt"
+    mode: "0644"
+  delegate_to: localhost
+
+- name: "REPORT | Confirm IOS XR health report file path to console"
+  ansible.builtin.debug:
+    msg: "IOS XR health report saved → {{ report_dir_iosxr }}{{ iosxr_hostname | default(inventory_hostname) }}_iosxr_health_report_{{ report_ts }}.txt"
