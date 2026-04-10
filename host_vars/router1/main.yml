@@ -1,6 +1,0 @@
----
-# ============================================================
-# HOST VARS — router1 specific overrides.
-# Example: router1 uses jumbo frames so MTU 9000 is normal.
-# ============================================================
-# standard_mtu: "9000"
