@@ -1,0 +1,14 @@
+---
+- name: "14. Failover / HA state"
+  cisco.asa.asa_command:
+    commands:
+      - show failover
+  register: asa_failover
+
+- name: "DEBUG | Failover state raw"
+  ansible.builtin.debug:
+    var: asa_failover.stdout
+
+- name: "SET | Failover summary"
+  ansible.builtin.set_fact:
+    asa_failover_summary: "{{ asa_failover.stdout[0] | default('Failover not configured or no output.') | regex_replace('\\r', '') }}"

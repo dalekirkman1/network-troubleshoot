@@ -1,11 +1,16 @@
 ---
-- name: 6. Interface status
+- name: "6. Interface status and summary"
   cisco.asa.asa_command:
     commands:
       - show interface ip brief
       - show interface summary
   register: asa_interface_status
-  
-- name: Debug interface status
-  debug:
+
+- name: "DEBUG | Interface status raw"
+  ansible.builtin.debug:
     var: asa_interface_status.stdout
+
+- name: "SET | Interface brief & summary strings"
+  ansible.builtin.set_fact:
+    asa_int_brief: "{{ asa_interface_status.stdout[0] | default('N/A') | regex_replace('\\r', '') }}"
+    asa_int_summary: "{{ asa_interface_status.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"

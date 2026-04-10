@@ -1,11 +1,14 @@
 ---
-- name: 10. Routing and neighbor state
+- name: "10. Dynamic routing neighbors"
   cisco.asa.asa_command:
     commands:
       - show ospf neighbor
-      - show route
   register: asa_routing
-  
-- name: Debug routing and neighbor state
-  debug:
+
+- name: "DEBUG | Routing neighbors raw"
+  ansible.builtin.debug:
     var: asa_routing.stdout
+
+- name: "SET | OSPF neighbor summary"
+  ansible.builtin.set_fact:
+    asa_ospf_neighbors: "{{ asa_routing.stdout[0] | default('No OSPF neighbors or not configured.') | regex_replace('\\r', '') }}"

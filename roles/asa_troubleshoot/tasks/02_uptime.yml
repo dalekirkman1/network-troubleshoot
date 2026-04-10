@@ -1,10 +1,31 @@
 ---
-- name: 2. Device uptime
+- name: "2. Device uptime (reuse show version)"
   cisco.asa.asa_command:
     commands:
       - show version
   register: asa_uptime
-  
-- name: Debug uptime
-  debug:
-      var: asa_uptime.stdout
+
+- name: "DEBUG | Uptime raw"
+  ansible.builtin.debug:
+    var: asa_uptime.stdout
+
+- name: "SET | Parsed uptime and reload reason (safe)"
+  ansible.builtin.set_fact:
+    asa_uptime_line: >-
+      {% set v = asa_uptime.stdout[0] | default('') %}
+      {% set lines = (v | regex_replace('\\r', '')).split('\n') %}
+      {% set up_line = (lines | select('search', ' up ') | list | first | default('')) %}
+      {% if up_line %}
+      {{ up_line.strip() }}
+      {% else %}
+      Uptime: see full show version output
+      {% endif %}
+    asa_reload_reason: >-
+      {% set v = asa_uptime.stdout[0] | default('') %}
+      {% set lines = (v | regex_replace('\\r', '')).split('\n') %}
+      {% set reason_line = (lines | select('search', 'Reason:') | list | first | default('')) %}
+      {% if reason_line %}
+      {{ reason_line.split('Reason:')[-1].strip() }}
+      {% else %}
+      N/A
+      {% endif %}

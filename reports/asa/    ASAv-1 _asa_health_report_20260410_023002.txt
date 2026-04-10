@@ -1,0 +1,529 @@
+=======================================================
+HEALTH REPORT:     ASAv-1 
+DATE: 20260410_023002
+=======================================================
+
+
+
+--- 1. SYSTEM INFO ---
+Cisco Adaptive Security Appliance Software Version 9.23(1) 
+SSP Operating System Version 2.17(0.518)
+Device Manager Version 7.23(1)
+
+Compiled on Mon 03-Mar-25 15:42 GMT by fpbesprd
+System image file is "boot:/asa9231-smp-k8.bin"
+Config file at boot was "startup-config"
+
+ASAv-1 up 14 mins 42 secs
+Start-up time 9 secs
+
+Hardware:   ASAv, 2048 MB RAM, CPU Xeon 5500 series 3000 MHz,
+Internal ATA Compact Flash, 8192MB
+Slot 1: ATA Compact Flash, 8192MB
+BIOS Flash Firmware Hub @ 0x1, 0KB
+
+
+ 0: Ext: Management0/0       : address is 5254.0032.1d2f, irq 10
+ 1: Ext: GigabitEthernet0/0  : address is 5254.0076.9922, irq 11
+ 2: Ext: GigabitEthernet0/1  : address is 5254.0088.5285, irq 11
+ 3: Ext: GigabitEthernet0/2  : address is 5254.0008.e76a, irq 10
+ 4: Ext: GigabitEthernet0/3  : address is 5254.0055.a534, irq 10
+ 5: Ext: GigabitEthernet0/4  : address is 5254.00a3.44b7, irq 11
+ 6: Int: Internal-Data0/0    : address is 0000.0100.0001, irq 0
+
+License mode: Smart Licensing
+ASAv Platform License State: Unlicensed
+No active entitlement: no feature tier and no throughput level configured
+Firewall throughput limited to 100 Kbps
+
+Licensed features for this platform:
+Maximum VLANs                     : 50             
+Inside Hosts                      : Unlimited      
+Failover                          : Active/Active  
+Encryption-DES                    : Enabled        
+Encryption-3DES-AES               : Enabled        
+Security Contexts                 : 2              
+Carrier                           : Disabled       
+AnyConnect Premium Peers          : 2              
+AnyConnect Essentials             : Disabled       
+Other VPN Peers                   : 250            
+Total VPN Peers                   : 250            
+AnyConnect for Mobile             : Disabled       
+AnyConnect for Cisco VPN Phone    : Disabled       
+Advanced Endpoint Assessment      : Disabled       
+Shared License                    : Disabled       
+Total TLS Proxy Sessions          : 2              
+Botnet Traffic Filter             : Enabled        
+Cluster                           : Enabled        
+
+Serial Number: 9APD4K8U09G
+
+Image type          : Release
+Key version         : A
+
+Configuration has not been modified since last system restart.
+
+
+
+--- 2. DEVICE UPTIME ---
+    ASAv-1 up 14 mins 43 secs 
+Last reload reason:     N/A 
+
+
+
+--- 3. PLATFORM HEALTH STATUS ---
+CPU utilization for 5 seconds = 1%; 1 minute: 2%; 5 minutes: 1%
+
+Virtual platform CPU resources
+------------------------------
+Number of vCPUs              :     1
+
+
+
+--- 4. CPU TOP PROCESSES ---
+Hardware:   ASAv
+Cisco Adaptive Security Appliance Software Version 9.23(1)
+ASLR enabled, text region 55a41dca6000-55a42205e281
+PC         Thread       5Sec     1Min     5Min   Process
+0x000055a41f245920   0x00007fee1b0c8c20     0.0%     0.1%     0.0%   dbgtrace
+
+
+
+--- 5. MEMORY STATISTICS ---
+Free memory:         870980960 bytes (42%)
+Used memory:        1180443296 bytes (58%)
+-------------     ------------------
+Total memory:       2051424256 bytes (100%)
+
+Virtual platform memory
+-----------------------
+Provisioned       2048 MB 
+
+Note: Free memory is the free system memory. Additional memory may
+      be available from memory pools internal to the firewall process.
+      Use 'show memory detail' to see this information, but use it
+      with care since it may cause CPU hogs and packet loss under load.
+
+
+
+--- 6. INTERFACE STATUS ---
+Interface                  IP-Address      OK? Method Status                Protocol
+GigabitEthernet0/0         172.16.12.100   YES CONFIG up                    up  
+GigabitEthernet0/1         198.51.100.2    YES CONFIG down                  down
+GigabitEthernet0/2         unassigned      YES unset  administratively down down
+GigabitEthernet0/3         unassigned      YES unset  administratively down down
+GigabitEthernet0/4         unassigned      YES unset  administratively down down
+Internal-Data0/0           169.254.1.1     YES unset  up                    up  
+Management0/0              unassigned      YES unset  administratively down down
+
+Interface summary:
+Interface GigabitEthernet0/0 "inside", is up, line protocol is up
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex(Full-duplex), Auto-Speed(10000 Mbps)
+	Input flow control is unsupported, output flow control is unsupported
+	MAC address 5254.0076.9922, MTU 1500
+	IP address 172.16.12.100, subnet mask 255.255.255.0
+	706 packets input, 58649 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	282 packets output, 102773 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+  Traffic Statistics for "inside":
+	706 packets input, 44661 bytes
+	282 packets output, 98825 bytes
+	549 packets dropped
+      1 minute input rate 0 pkts/sec,  90 bytes/sec
+      1 minute output rate 0 pkts/sec,  64 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 0 pkts/sec,  38 bytes/sec
+      5 minute output rate 0 pkts/sec,  7 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface GigabitEthernet0/1 "outside", is down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	MAC address 5254.0088.5285, MTU 1500
+	IP address 198.51.100.2, subnet mask 255.255.255.0
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+  Traffic Statistics for "outside":
+	0 packets input, 0 bytes
+	0 packets output, 0 bytes
+	0 packets dropped
+      1 minute input rate 0 pkts/sec,  0 bytes/sec
+      1 minute output rate 0 pkts/sec,  0 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 0 pkts/sec,  0 bytes/sec
+      5 minute output rate 0 pkts/sec,  0 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface GigabitEthernet0/2 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.0008.e76a, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+Interface GigabitEthernet0/3 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.0055.a534, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+Interface GigabitEthernet0/4 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.00a3.44b7, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+Interface Management0/0 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.0032.1d2f, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+
+
+
+--- 7. TRANSCEIVER / INTERFACE DIAGNOSTICS ---
+Interface GigabitEthernet0/0 "inside", is up, line protocol is up
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex(Full-duplex), Auto-Speed(10000 Mbps)
+	Input flow control is unsupported, output flow control is unsupported
+	MAC address 5254.0076.9922, MTU 1500
+	IP address 172.16.12.100, subnet mask 255.255.255.0
+	741 packets input, 61185 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	344 packets output, 150073 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+  Traffic Statistics for "inside":
+	741 packets input, 46699 bytes
+	344 packets output, 145257 bytes
+	550 packets dropped
+      1 minute input rate 0 pkts/sec,  90 bytes/sec
+      1 minute output rate 0 pkts/sec,  64 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 0 pkts/sec,  38 bytes/sec
+      5 minute output rate 0 pkts/sec,  7 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface GigabitEthernet0/1 "outside", is down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	MAC address 5254.0088.5285, MTU 1500
+	IP address 198.51.100.2, subnet mask 255.255.255.0
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+  Traffic Statistics for "outside":
+	0 packets input, 0 bytes
+	0 packets output, 0 bytes
+	0 packets dropped
+      1 minute input rate 0 pkts/sec,  0 bytes/sec
+      1 minute output rate 0 pkts/sec,  0 bytes/sec
+      1 minute drop rate, 0 pkts/sec
+      5 minute input rate 0 pkts/sec,  0 bytes/sec
+      5 minute output rate 0 pkts/sec,  0 bytes/sec
+      5 minute drop rate, 0 pkts/sec
+Interface GigabitEthernet0/2 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.0008.e76a, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+Interface GigabitEthernet0/3 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.0055.a534, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+Interface GigabitEthernet0/4 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.00a3.44b7, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+Interface Management0/0 "", is administratively down, line protocol is down
+  Hardware is net_vmxnet3, BW 10000 Mbps, DLY 10 usec
+	Auto-Duplex, Auto-Speed
+	Input flow control is unsupported, output flow control is unsupported
+	Available but not configured via nameif
+	MAC address 5254.0032.1d2f, MTU not set
+	IP address unassigned
+	0 packets input, 0 bytes, 0 no buffer
+	Received 0 broadcasts, 0 runts, 0 giants
+	0 input errors, 0 CRC, 0 frame, 0 overrun, 0 ignored, 0 abort
+	0 pause input, 0 resume input
+	0 L2 decode drops
+	0 packets output, 0 bytes, 0 underruns
+	0 pause output, 0 resume output
+	0 output errors, 0 collisions, 0 interface resets
+	0 late collisions, 0 deferred
+	0 input reset drops, 0 output reset drops
+	input queue (blocks free curr/low): hardware (0/0)
+	output queue (blocks free curr/low): hardware (0/0)
+
+
+
+--- 8. TOPOLOGY (ARP & ROUTE) ---
+ARP table:
+inside 172.16.12.21 5254.000c.380e 59
+
+Route table:
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, V - VPN
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, + - replicated route
+       SI - Static InterVRF, BI - BGP InterVRF
+Gateway of last resort is 172.16.12.1 to network 0.0.0.0
+
+S*       0.0.0.0 0.0.0.0 [1/0] via 172.16.12.1, inside
+C        172.16.12.0 255.255.255.0 is directly connected, inside
+L        172.16.12.100 255.255.255.255 is directly connected, inside
+
+
+
+--- 9. OSPF NEIGHBORS ---
+
+
+
+
+--- 10. FLOW / NAT STATE ---
+Connection count:
+3 in use, 4 most used
+
+Xlate count:
+3 in use, 3 most used
+
+Local-host summary:
+Interface outside: 0 active, 0 maximum active
+Interface inside: 2 active, 2 maximum active
+local host: <224.0.0.5>,
+local host: <172.16.12.21>,
+Interface nlp_int_tap: 1 active, 2 maximum active
+local host: <169.254.1.2>,
+Interface any: 0 active, 0 maximum active
+
+NAT detail:
+Manual NAT Policies Implicit (Section 0)
+1 (nlp_int_tap) to (inside) source static nlp_server__ssh_172.16.12.0_intf2 interface  destination static 0_172.16.12.0_1 0_172.16.12.0_1 service tcp 4122 ssh 
+    translate_hits = 2, untranslate_hits = 2
+    Source - Origin: 169.254.1.2/32, Translated: 172.16.12.100/24
+    Destination - Origin: 172.16.12.0/24, Translated: 172.16.12.0/24
+    Service - Protocol: tcp Real: 4122 Mapped: ssh 
+2 (nlp_int_tap) to (inside) source dynamic nlp_client_0_172.16.12.0_6proto22_intf2 interface  destination static nlp_client_0_ipv4_2 nlp_client_0_ipv4_2 service nlp_client_0_6svc22_1 nlp_client_0_6svc22_1
+    translate_hits = 0, untranslate_hits = 0
+    Source - Origin: 169.254.1.2/32, Translated: 172.16.12.100/24
+    Destination - Origin: 172.16.12.0/24, Translated: 172.16.12.0/24
+    Service - Origin: tcp destination eq ssh , Translated: tcp destination eq ssh 
+
+Auto NAT Policies (Section 2)
+1 (inside) to (outside) source dynamic INSIDE-NET interface 
+    translate_hits = 0, untranslate_hits = 0
+    Source - Origin: 172.16.12.0/24, Translated: 198.51.100.2/24
+
+
+
+--- 11. RECENT LOGS ---
+Syslog logging: enabled
+    Facility: 20
+    Timestamp logging: disabled
+    Logging Format: disabled
+    Hide Username logging: enabled
+    Standby logging: disabled
+    Debug-trace logging: disabled
+    Console logging: disabled
+    Monitor logging: disabled
+    Buffer logging: level informational, 482 messages logged
+    Trap logging: level informational, facility 20, 507 messages logged
+        Logging to inside 172.16.12.21, UDP TX:409 errors: 4  dropped: 22
+    Global TCP syslog stats::
+        NOT_PUTABLE: 0, ALL_CHANNEL_DOWN: 0
+        CHANNEL_FLAP_CNT: 0, SYSLOG_PKT_LOSS: 0
+        PARTIAL_REWRITE_CNT: 0
+    Permit-hostdown logging: disabled
+    History logging: disabled
+    Device ID: disabled
+    Mail logging: disabled
+    ASDM logging: disabled
+%ASA-4-769009: UPDATE: Image booted boot:/asa9231-s0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302014: Teardown TCP connection 18 for inside:172.16.12.21/56700 to nlp_int_tap:169.254.1.2/4122 duration 0:00:32 bytes 4645 TCP FINs from inside -1 -1
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302013: Built inbound TCP connection 26 for inside:172.16.12.21/46252 (172.16.12.21/46252) to nlp_int_tap:169.254.1.2/4122 (172.16.12.100/22) -1 -1
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-3-199015: Apr 10 02:29:50 sshd: PAM unable to resolve symbol: pam_sm_setcred
+%ASA-5-199017: Apr 10 02:29:50 sshd: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=172.16.12.21  user=509?cisco
+%ASA-6-113012: AAA user authentication Successful : local database : user = cisco
+%ASA-6-113008: AAA transaction status ACCEPT : user = cisco
+%ASA-6-611101: User authentication succeeded: IP address: 172.16.12.21, Uname: cisco
+%ASA-6-199018: Apr 10 02:29:50 sshd: pam_unix(sshd:session): session opened for user 509?cisco(uid=0) by (uid=0)
+%ASA-6-769007: UPDATE: Image version is 9.23(1)
+%ASA-4-769009: UPDATE: Image booted boot:/asa9231-smp-k8.bin is different from boot images
+%ASA-5-502103: User priv level changed: Uname: enable_15 From: 1 To: 15
+%ASA-5-111008: User 'cisco' executed the 'enable' command.
+%ASA-5-111008: User 'enable_15' executed the 'no terminal pager' command.
+%ASA-5-111010: User 'enable_15', running 'CLI' from IP 0.0.0.0, executed 'no terminal pager'
+%ASA-5-111008: User 'enable_15' executed the 'no terminal pager' command.
+%ASA-5-111010: User 'enable_15', running 'CLI' from IP 0.0.0.0, executed 'no terminal pager'
+%ASA-4-711004: Task ran for 100 msec, Process = lina_ipc_rclient, PC = 209f233b, Call stack = 
+%ASA-4-711004: Task ran for 100 msec, Process = VM environment thread, PC = 211db9b5, Call stack =   0x000055a41ecff78f
+%ASA-5-111008: User 'enable_15' executed the 'no debug ssh' command.
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302020: Built inbound ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+%ASA-6-302021: Teardown ICMP connection for faddr 172.16.12.21/0 gaddr 172.16.12.100/0 laddr 172.16.12.100/0 type 3 code 3 Internal-Data0/-1:RX[-1]
+
+
+
+--- 13. VPN STATE ---
+VPN summary:
+No VPN sessions summary collected.
+
+AnyConnect sessions:
+No AnyConnect sessions or not configured.
+
+IKEv2 SAs:
+No IKEv2 SAs or not configured.
+
+IPsec SAs:
+No IPsec SAs or not configured.
+
+
+
+--- 14. FAILOVER / HA STATE ---
+Failover not configured or no output collected.

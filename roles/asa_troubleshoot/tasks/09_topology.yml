@@ -1,11 +1,16 @@
 ---
-- name: 9. Topology and neighbor data
+- name: "9. ARP table and routing snapshot"
   cisco.asa.asa_command:
     commands:
       - show arp
       - show route
   register: asa_topology
-  
-- name: Debug topology and neighbor data
-  debug:
+
+- name: "DEBUG | Topology raw"
+  ansible.builtin.debug:
     var: asa_topology.stdout
+
+- name: "SET | ARP and route summary"
+  ansible.builtin.set_fact:
+    asa_arp_table: "{{ asa_topology.stdout[0] | default('N/A') | regex_replace('\\r', '') }}"
+    asa_route_table: "{{ asa_topology.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"

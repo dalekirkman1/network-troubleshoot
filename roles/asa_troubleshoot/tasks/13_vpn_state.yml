@@ -1,0 +1,20 @@
+---
+- name: "13. VPN session and tunnel state"
+  cisco.asa.asa_command:
+    commands:
+      - show vpn-sessiondb summary
+      - show vpn-sessiondb anyconnect
+      - show crypto ikev2 sa
+      - show crypto ipsec sa
+  register: asa_vpn_state
+
+- name: "DEBUG | VPN state raw"
+  ansible.builtin.debug:
+    var: asa_vpn_state.stdout
+
+- name: "SET | VPN state summaries"
+  ansible.builtin.set_fact:
+    asa_vpn_summary: "{{ asa_vpn_state.stdout[0] | default('No VPN sessions summary available.') | regex_replace('\\r', '') }}"
+    asa_anyconnect_summary: "{{ asa_vpn_state.stdout[1] | default('No AnyConnect sessions or not configured.') | regex_replace('\\r', '') }}"
+    asa_ikev2_sa: "{{ asa_vpn_state.stdout[2] | default('No IKEv2 SAs or not configured.') | regex_replace('\\r', '') }}"
+    asa_ipsec_sa: "{{ asa_vpn_state.stdout[3] | default('No IPsec SAs or not configured.') | regex_replace('\\r', '') }}"

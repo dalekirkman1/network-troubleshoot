@@ -1,12 +1,16 @@
 ---
-- name: 3. Platform health status
+- name: "3. Platform health (CPU & memory)"
   cisco.asa.asa_command:
     commands:
       - show cpu usage
       - show memory
-      - show processes cpu-usage non-zero sorted
   register: asa_platform_health
-  
-- name: Debug platform health
-  debug:
+
+- name: "DEBUG | Platform health raw"
+  ansible.builtin.debug:
     var: asa_platform_health.stdout
+
+- name: "SET | CPU and memory summary facts"
+  ansible.builtin.set_fact:
+    asa_cpu_usage_summary: "{{ asa_platform_health.stdout[0] | default('N/A') }}"
+    asa_memory_summary: "{{ asa_platform_health.stdout[1] | default('N/A') | regex_replace('\\r', '') }}"

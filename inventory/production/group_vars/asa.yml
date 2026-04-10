@@ -18,3 +18,5 @@ ansible_become_pass: "{{ vault_asa_enable_password }}"
 
 
 ansible_network_cli_ssh_type: paramiko
+
+report_dir: "./reports/asa/"
