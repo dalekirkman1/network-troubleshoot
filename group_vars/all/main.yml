@@ -1,7 +1,11 @@
 ---
 ansible_network_os: cisco.ios.ios
 ansible_connection: network_cli
+
+# Do not escalate by default; enable per-play/task if needed
 ansible_become: false
+
+# Credentials pulled from Ansible Vault; omit if not set
 ansible_user: "{{ vault_ansible_user | default(omit) }}"
 ansible_password: "{{ vault_ansible_password | default(omit) }}"
 ansible_become_password: "{{ vault_ansible_become_password | default(omit) }}"

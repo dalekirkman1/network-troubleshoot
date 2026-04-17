@@ -1,7 +1,8 @@
 # Role: ios_xe_health_check
 
-Performs health data collection and alerting across Cisco IOS-XE
-devices. See the top-level README.md for full usage instructions.
+Performs health data collection and alerting across Cisco IOS-XE devices. 
+
+See the top-level README.md for full usage instructions.
 
 ## Task Files
 
